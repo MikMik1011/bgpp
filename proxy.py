@@ -31,7 +31,7 @@ def doRequest(url):
     
 @app.route('/api/stations/<id>', methods=['GET'])
 def checkStation(id):
-    url = base_url + '/announcement/announcement.php?station_uid=' + str(id_uid_map[id])
+    url = base_url + '/announcement/announcement.php?station_uid=' + str(id_uid_map.get(id) or 0)
     return doRequest(url)
 
 @app.route('/api/stations/all', methods=['GET'])
@@ -45,4 +45,4 @@ def index():
 
 if __name__ == '__main__':
     populateMap()
-    app.run(host='localhost', port=8000)
+    app.run(host='0.0.0.0', port=8000)
