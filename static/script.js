@@ -26,6 +26,8 @@ const updateDisplay = (id) => {
             value.seconds_left % 60
           }</td>
                         <td>${value.stations_between}</td>
+                        <td>${value.vehicles[0].station_name}</td>
+                        <td>${value.vehicles[0].garageNo}</td>
                     </tr>`;
         })
         .join("");
