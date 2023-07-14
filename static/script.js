@@ -2,18 +2,19 @@ var interval;
 
 const updateDisplay = (id) => {
   var url = "/api/stations/" + id;
-  const stationName = document.querySelector("#stationName");
-  stationName.innerHTML += `<i>azuriranje u toku...</i> <br>`;
+  $("#stationName").append(`<i>azuriranje u toku...</i> <br>`);
   $.ajax({
     url: url,
     type: "GET",
     success: function (response) {
       var date = new Date();
       response.reverse();
-      
-      stationName.innerHTML = `<b>${response[0].station_name.toLowerCase()}</b> <br>
-                                <i> azurirano: ${date.toLocaleTimeString().toLowerCase()} </i>
-                                <br>`;
+
+      $("#stationName")
+        .html(`<b>${response[0].station_name.toLowerCase()}</b> <br>
+                <i> azurirano: ${date
+                  .toLocaleTimeString()
+                  .toLowerCase()} </i> <br>`);
       const tableData = response
         .map((value) => {
           if (value.just_coordinates === "1")
@@ -28,8 +29,7 @@ const updateDisplay = (id) => {
                     </tr>`;
         })
         .join("");
-      const tableBody = document.querySelector("#tableBody");
-      tableBody.innerHTML = tableData;
+      $("#tableBody").html(tableData);
     },
     error: function (error) {
       console.error("Error sending request:", error);
