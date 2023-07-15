@@ -11,45 +11,41 @@ const updateDisplay = (city, id, recenter) => {
     type: "GET",
     success: function (response) {
       var date = new Date();
-      response.reverse();
+      response.vehicles.reverse();
 
       $("#stationName")
-        .html(`<b>${response[0].station_name.toLowerCase()}</b> <br>
+        .html(`<b>${response.name.toLowerCase()} (${response.id.toLowerCase()})</b> <br>
                 <i> azurirano: ${date
                   .toLocaleTimeString()
                   .toLowerCase()} </i> <br>`);
 
       layerGroup.clearLayers();
+      console.log(response.coords)
       if (recenter)
         map.setView(
-          [response[0].stations_gpsx, response[0].stations_gpsy],
+          response.coords,
           13,
           { animation: true }
         );
 
-      const tableData = response
+      const tableData = response.vehicles
         .map((value) => {
-          if (value.just_coordinates === "1")
-            return `<h4> nema buseva mrs peske!</h4>`;
 
-          let marker = new L.marker([
-            value.vehicles[0].lat,
-            value.vehicles[0].lng,
-          ]);
-          marker.bindTooltip(value.line_number.toLowerCase(), {
+          let marker = new L.marker(value.coords);
+          marker.bindTooltip(value.lineNumber.toLowerCase(), {
             permanent: true,
             direction: "center",
             className: "my-labels",
           });
           marker.addTo(layerGroup);
           return `<tr>
-                        <td>${value.line_number.toLowerCase()}</td>
-                        <td>${Math.floor(value.seconds_left / 60)}:${
-            value.seconds_left % 60
+                        <td>${value.lineNumber.toLowerCase()}</td>
+                        <td>${Math.floor(value.secondsLeft / 60)}:${
+            value.secondsLeft % 60
           }</td>
-                        <td>${value.stations_between}</td>
-                        <td>${value.vehicles[0].station_name.toLowerCase()}</td>
-                        <td>${value.vehicles[0].garageNo.toLowerCase()}</td>
+                        <td>${value.stationsBetween}</td>
+                        <td>${value.stationName.toLowerCase()}</td>
+                        <td>${value.garageNo.toLowerCase()}</td>
                     </tr>`;
         })
         .join("");
