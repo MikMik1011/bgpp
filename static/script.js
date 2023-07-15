@@ -2,10 +2,10 @@ var interval;
 var map, layerGroup;
 let lastStationId = 0;
 
-const updateDisplay = (id, recenter) => {
-  var url = "/api/stations/" + id;
+const updateDisplay = (city, id, recenter) => {
+  var url = `/api/stations/${city}/${id}`;
   $("#stationName").append(`<i>azuriranje u toku...</i> <br>`);
-  
+
   $.ajax({
     url: url,
     type: "GET",
@@ -23,7 +23,7 @@ const updateDisplay = (id, recenter) => {
       if (recenter)
         map.setView(
           [response[0].stations_gpsx, response[0].stations_gpsy],
-          12,
+          13,
           { animation: true }
         );
 
@@ -65,7 +65,7 @@ const updateDisplay = (id, recenter) => {
 $(document).ready(function () {
   map = L.map("map", {
     center: [44.81254796404323, 20.46145496621977],
-    zoom: 12,
+    zoom: 13,
   });
   layerGroup = L.layerGroup().addTo(map);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -76,12 +76,13 @@ $(document).ready(function () {
   $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
 
-    var id = encodeURIComponent($("#idInput").val());
-    updateDisplay(id, true);
+    var id = $("#idInput").val();
+    var city = $("#city").val();
+    updateDisplay(city, id, true);
 
     clearInterval(interval);
     interval = setInterval(() => {
-      updateDisplay(id, false);
+      updateDisplay(city, id, false);
     }, 10 * 1000);
   });
 });
