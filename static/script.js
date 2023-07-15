@@ -68,10 +68,10 @@ $(document).ready(function () {
     zoom: 13,
   });
   layerGroup = L.layerGroup().addTo(map);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
+
+  
+  L.control.layers(mapLayers).addTo(map);
+  mapLayers.Transport.addTo(map);
 
   $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
