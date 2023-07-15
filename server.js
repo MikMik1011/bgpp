@@ -20,8 +20,8 @@ async function populateMap() {
   const allStations = await getAllStations();
   console.log("Fetched all stations");
 
-  for (const city of allStations.stations) {
-    id_uid_map[city.station_id] = city.id;
+  for (const station of allStations.stations) {
+    id_uid_map[station.station_id] = station.id;
   }
 
   console.log("Populating map finished");
@@ -40,23 +40,28 @@ async function doRequest(url) {
   }
 }
 
-async function getStationById(request, reply) {
-  const id = request.params.id;
+async function getStationById(id) {
   const url = `${base_url}/announcement/announcement.php?station_uid=${
     id_uid_map[id] || 0
   }`;
-  const response = await doRequest(url);
-  return response;
+  return await doRequest(url);
 }
 
-async function getAllStations(request, reply) {
+async function getAllStations() {
   const url = `${base_url}/networkextended.php?action=get_cities_extended`;
   const response = await doRequest(url);
   return response;
 }
 
-fastify.get("/api/stations/:id", getStationById);
-fastify.get("/api/stations/all", getAllStations);
+fastify.get("/api/stations/:id", async (request, reply) => {
+    const id = request.params.id;
+    const response = await getStationById(id);
+    reply.send(response);
+})
+fastify.get("/api/stations/all", async (request, reply) => {
+    const response = await getAllStations();
+    reply.send(response);
+})
 fastify.get("/", (request, reply) => reply.sendFile("index.html"));
 
 (async () => {
