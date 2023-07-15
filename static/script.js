@@ -5,6 +5,7 @@ let lastStationId = 0;
 const updateDisplay = (id, recenter) => {
   var url = "/api/stations/" + id;
   $("#stationName").append(`<i>azuriranje u toku...</i> <br>`);
+  
   $.ajax({
     url: url,
     type: "GET",
