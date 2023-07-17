@@ -1,6 +1,4 @@
 body {
-    margin: 0;
-    padding: 0;
     text-align: center;
     background-position: center center;
     background-repeat: no-repeat;
@@ -39,4 +37,15 @@ body {
 }
 #submit:hover {
     transform: scale(1.1);
+}
+
+@media screen and (max-width: 600px) {
+    #map {
+        width: 100vw;
+        height: 50vh;
+    }
+    #submit {
+        width: 35%;
+    }
+    
 }
