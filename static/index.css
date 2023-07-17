@@ -6,6 +6,7 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-image: url('Pics/beograd.jpg');
+    background-size: cover;
 }
 
 #map {
