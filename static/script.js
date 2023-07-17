@@ -1,23 +1,23 @@
-var interval;
-var map, layerGroup;
+let interval;
+let map, layerGroup;
 let lastStationId = 0;
 
 const updateDisplay = (city, id, recenter) => {
-  var url = `/api/stations/${city}/${id}`;
-  $("#stationName").append(`<i>AŽuriranje u toku...</i> <br>`);
+  let url = `/api/stations/${city}/${id}`;
+  $("#updateInProgress").show();
 
   $.ajax({
     url: url,
     type: "GET",
     success: function (response) {
-      var date = new Date();
+      let date = new Date();
       response.vehicles.reverse();
 
       $("#stationName")
-        .html(`<b>${response.name} (${response.id})</b> <br>
-                <i> AŽURIRANO: ${date
-                  .toLocaleTimeString()} 
-                  </i> <br>`);
+        .html(`${response.name} (${response.id})`);
+      $("#lastUpdated").html(`Poslednji put ažurirano: ${date.toLocaleTimeString()}`);
+      $("#updateInProgress").hide();
+        
 
       layerGroup.clearLayers();
       console.log(response.coords)
@@ -72,8 +72,8 @@ $(document).ready(function () {
   $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
 
-    var id = $("#idInput").val();
-    var city = $("#city").val();
+    let id = $("#idInput").val();
+    let city = $("#city").val();
     updateDisplay(city, id, true);
 
     clearInterval(interval);

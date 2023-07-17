@@ -7,6 +7,14 @@ body {
     background-size: cover;
 }
 
+#stationName {
+    font-weight: bold;
+}
+
+#lastUpdated, #updateInProgress {
+    font-style: italic;
+}
+
 #map {
     width: 30vw;
     height: 30vw;
