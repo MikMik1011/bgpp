@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: url('Pics/beograd.jpg');
+}
+
+#map {
+    width: 30vw;
+    height: 30vw;
+}
+#result {
+    margin: auto; 
+}
+#map {
+    border: 2px solid black;
+    margin: auto;
+}
+#tabela {
+    color: white;
+    font-size: large;
+    border: 2px solid black;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: auto;
+}
+#submit {
+    cursor: pointer;
+    border: 2px solid black;
+    width: 15%;
+    padding: 1vh;
+    border-radius: 35px;
+    background: transparent;
+    transition: all .2s ease-in-out;
+}
+#submit:hover {
+    transform: scale(1.1);
+}

@@ -4,7 +4,7 @@ let lastStationId = 0;
 
 const updateDisplay = (city, id, recenter) => {
   var url = `/api/stations/${city}/${id}`;
-  $("#stationName").append(`<i>azuriranje u toku...</i> <br>`);
+  $("#stationName").append(`<i>AŽuriranje u toku...</i> <br>`);
 
   $.ajax({
     url: url,
@@ -14,10 +14,10 @@ const updateDisplay = (city, id, recenter) => {
       response.vehicles.reverse();
 
       $("#stationName")
-        .html(`<b>${response.name.toLowerCase()} (${response.id.toLowerCase()})</b> <br>
-                <i> azurirano: ${date
-                  .toLocaleTimeString()
-                  .toLowerCase()} </i> <br>`);
+        .html(`<b>${response.name} (${response.id})</b> <br>
+                <i> AŽURIRANO: ${date
+                  .toLocaleTimeString()} 
+                  </i> <br>`);
 
       layerGroup.clearLayers();
       console.log(response.coords)
