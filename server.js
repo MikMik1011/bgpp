@@ -12,14 +12,30 @@ fastify.register(require("@fastify/static"), {
 });
 
 const apikeys = require("./apikeys.json");
-const id_uid_map = {};
-const name_uid_map = {};
+
+let id_uid_map = {};
+let name_uid_map = {};
+let allStations = {};
 
 const getKeyByValue = (object, value) => {
   return Object.keys(object).find((key) => object[key] === value);
 };
+function transformAllStationsResponse(response) {
+  let newResp = new Array();
+  response.stations.map((value) => {
+    let station = new Object();
+    station.name = value.name;
+    station.uid = value.id;
+    station.id = value.station_id;
+    station.coords = [value.coordinates.latitude, value.coordinates.longitude];
+    newResp.push(station);
+  });
+  return newResp;
 
-function transformResponse(response, city) {
+}
+
+
+function transformStationResponse(response, city) {
   let newResp = new Object();
   newResp.city = city;
   newResp.name = response[0].station_name;
@@ -55,13 +71,15 @@ async function populateMap() {
   console.log("Populating map started");
   for (const city of Object.keys(apikeys)) {
     try {
-      const allStations = await getAllStations(city);
+      const stations = await getAllStations(city);
       console.log(`Fetched all stations in ${city}`);
+
       id_uid_map[city] = {};
       name_uid_map[city] = {};
-      for (const station of allStations.stations) {
-        id_uid_map[city][station.station_id.toString()] = station.id.toString();
-        name_uid_map[city][station.station_name] = station.id.toString();
+
+      for (const station of stations) {
+        id_uid_map[city][station.id.toString()] = station.uid.toString();
+        name_uid_map[city][station.name] = station.uid.toString();
       }
     } catch (err) {
       console.error(err);
@@ -93,13 +111,17 @@ async function getStationById(city, id) {
     id_uid_map[city][id] || 0
   }`;
   let resp = await doRequest(url, apikeys[city].key);
-  return transformResponse(resp, city);
+  return transformStationResponse(resp, city);
 }
 
 async function getAllStations(city) {
   const url = `${apikeys[city].url}/publicapi/v1/networkextended.php?action=get_cities_extended`;
-  const response = await doRequest(url, apikeys[city].key);
-  return response;
+  if (!allStations[city]) {
+    const response = await doRequest(url, apikeys[city].key);
+    allStations[city] = transformAllStationsResponse(response);
+  }
+  return allStations[city];
+  
 }
 
 fastify.get("/api/stations/:city/:id", async (request, reply) => {
