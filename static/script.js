@@ -82,6 +82,21 @@ $(document).ready(function () {
   L.control.layers(mapLayers).addTo(map);
   mapLayers.Transport.addTo(map);
 
+  $.ajax({
+    url: "/api/cities",
+    type: "GET",
+    success: function (response) {
+      let cities = Object.entries(response).map(([key, value]) => {
+        return `<option value="${key}">${value}</option>`;
+      });
+      $("#city").html(cities);
+    },
+    error: function (error) {
+      console.error("Error sending request:", error);
+      // Handle error here
+    },
+  });
+
   $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
 

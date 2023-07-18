@@ -31,9 +31,7 @@ function transformAllStationsResponse(response) {
     newResp.push(station);
   });
   return newResp;
-
 }
-
 
 function transformStationResponse(response, city) {
   let newResp = new Object();
@@ -96,7 +94,7 @@ async function doRequest(url, apikey) {
   const headers = {
     "X-Api-Authentication": apikey,
   };
-  
+
   const response = await axios.get(url, { headers, timeout: 5000 });
   if (response.status != 200)
     throw new Error(`Request failed with status code ${response.status}`);
@@ -121,7 +119,12 @@ async function getAllStations(city) {
     allStations[city] = transformAllStationsResponse(response);
   }
   return allStations[city];
-  
+}
+
+function getAvaliableCities() {
+  let cities = new Object();
+  for (id of Object.keys(apikeys)) cities[id] = apikeys[id].name;
+  return cities;
 }
 
 fastify.get("/api/stations/:city/:id", async (request, reply) => {
@@ -139,6 +142,15 @@ fastify.get("/api/stations/:city/all", async (request, reply) => {
   const city = request.params.city;
   try {
     const response = await getAllStations(city);
+    reply.send(response);
+  } catch (err) {
+    console.error(err);
+    reply.send(err);
+  }
+});
+fastify.get("/api/cities", async (request, reply) => {
+  try {
+    const response = getAvaliableCities();
     reply.send(response);
   } catch (err) {
     console.error(err);

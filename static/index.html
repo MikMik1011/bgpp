@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>bg++</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/index.css" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -20,27 +20,22 @@
     <script src="static/mapLayers.js"></script>
     <script>
       let pics = {
-        'bg': 'static/Pics/beograd.jpg',
-        'ns': 'static/Pics/novi-sad.jpg',
-        'nis': 'static/Pics/nis.jpg'
-      }
+        bg: "static/Pics/beograd.jpg",
+        ns: "static/Pics/novi-sad.jpg",
+        nis: "static/Pics/nis.jpg",
+      };
 
       function changeBg() {
-        let choice = document.getElementById('city').value;
+        let choice = document.getElementById("city").value;
         document.body.style.backgroundImage = `url('${pics[choice]}')`;
       }
-
     </script>
   </head>
   <body class="body">
     <h1>srbus</h1>
     <h3>Fixamo fix ideje since 2023</h3>
     <form id="myForm">
-      <select id="city" name="city" onchange="changeBg()">
-        <option value="bg">Beograd</option>
-        <option value="ns">Novi Sad</option>
-        <option value="nis">Nis</option>
-      </select>
+      <select id="city" name="city" onchange="changeBg()"></select>
       <br />
       <br />
       <label for="idInput">ID stanice:</label>
@@ -51,7 +46,7 @@
     <div id="result">
       <p id="stationName"></p>
       <p id="lastUpdated"></p>
-      <p id="updateInProgress" style="display: none;">Ažuriranje u toku...</p>
+      <p id="updateInProgress" style="display: none">Ažuriranje u toku...</p>
       <br />
       <table id="tabela" border="2">
         <thead class="thead-dark">
