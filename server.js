@@ -100,7 +100,11 @@ async function doRequest(url, apikey) {
 async function getStationInfo(city, query) {
   const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?station_uid=`;
   if (query.uid) var url = baseUrl + query.uid;
-  else if (query.id) var url = baseUrl + id_uid_map[city][query.id.toString()];
+  else if (query.id) {
+    if (!id_uid_map[city]) throw new Error("Invalid ID (or maybe map is not populated yet?)");
+    var url = baseUrl + id_uid_map[city][query.id.toString()];
+  }
+
   else throw new Error("Invalid query");
   
   let resp = await doRequest(url, apikeys[city].key);
