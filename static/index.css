@@ -33,6 +33,7 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     margin: auto;
+    display: none;
 }
 #submit {
     cursor: pointer;
