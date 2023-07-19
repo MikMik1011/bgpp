@@ -1,7 +1,5 @@
 const fastify = require("fastify")({
-  logger: {
-    logging: "info",
-  },
+  logger: true,
 });
 const axios = require("axios");
 const path = require("path");
@@ -102,12 +100,12 @@ async function doRequest(url, apikey) {
   return response.data;
 }
 
-async function getStationById(city, id) {
-  const url = `${
-    apikeys[city].url
-  }/publicapi/v1/announcement/announcement.php?station_uid=${
-    id_uid_map[city][id] || 0
-  }`;
+async function getStationInfo(city, query) {
+  const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?station_uid=`;
+  if (query.uid) var url = baseUrl + query.uid;
+  else if (query.id) var url = baseUrl + id_uid_map[city][query.id.toString()];
+  else throw new Error("Invalid query");
+  
   let resp = await doRequest(url, apikeys[city].key);
   return transformStationResponse(resp, city);
 }
@@ -127,11 +125,10 @@ function getAvaliableCities() {
   return cities;
 }
 
-fastify.get("/api/stations/:city/:id", async (request, reply) => {
-  const id = request.params.id;
+fastify.get("/api/stations/:city/search", async (request, reply) => {
   const city = request.params.city;
   try {
-    const response = await getStationById(city, id);
+    const response = await getStationInfo(city, request.query);
     reply.send(response);
   } catch (err) {
     console.error(err);

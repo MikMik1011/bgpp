@@ -21,7 +21,7 @@ const formatSeconds = (seconds) => {
 };
 
 const updateDisplay = (city, id, recenter) => {
-  let url = `/api/stations/${city}/${id}`;
+  let url = `/api/stations/${city}/search?id=${id}`;
   $("#updateInProgress").show();
 
   $.ajax({
@@ -100,8 +100,8 @@ $(document).ready(function () {
   $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
 
-    let id = $("#idInput").val();
-    let city = $("#city").val();
+    let id = encodeURIComponent($("#idInput").val());
+    let city = encodeURIComponent($("#city").val());
     updateDisplay(city, id, true);
 
     clearInterval(interval);
