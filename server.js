@@ -12,7 +12,6 @@ fastify.register(require("@fastify/static"), {
 const apikeys = require("./apikeys.json");
 
 let id_uid_map = {};
-let name_uid_map = {};
 let allStations = {};
 
 const getKeyByValue = (object, value) => {
@@ -71,11 +70,9 @@ async function populateMap() {
       console.log(`Fetched all stations in ${city}`);
 
       id_uid_map[city] = {};
-      name_uid_map[city] = {};
 
       for (const station of stations) {
         id_uid_map[city][station.id.toString()] = station.uid.toString();
-        name_uid_map[city][station.name] = station.uid.toString();
       }
     } catch (err) {
       console.error(err);
