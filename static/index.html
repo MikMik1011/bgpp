@@ -31,9 +31,35 @@
           document.body.style.backgroundImage = "url('static/Pics/nis.jpg')";
         }
       }
+      /*function hideTable(){
+        var tabela = document.getElementById("result");
+        var idStan = document.getElementById('idInput');
+        if (idStan.value == '' || idStan.value == ' ') {
+          tabela.style.display = 'none';
+        }
+        else {
+          tabela.style.display = 'block';
+        }
+      }*/
+
+      function hideTable() {
+        const tabela = document.getElementsByTagName("table");
+        var idStan = document.getElementById("idInput");
+        if (idStan.value == '') {
+          for (let i = 0; i< tabela.length; i++){
+          tabela[i].style.display = 'none';
+          }
+        }
+        else {
+          for (let i = 0; i< tabela.length; i++){
+          tabela[i].style.display = 'table';
+          }
+        }
+      }
+      
     </script>
   </head>
-  <body class="body">
+  <body class="body" onload="hideTable()">
     <h1>srbus</h1>
     <h3>Fixamo fix ideje since 2023</h3>
     <form id="myForm">
@@ -45,8 +71,8 @@
       <br />
       <br />
       <label for="idInput">ID stanice:</label>
-      <input type="text" id="idInput" name="idInput" required /><br /><br />
-      <input id="submit" type="submit" value="Kad ce mi bus???" />
+      <input type="text" id="idInput" name="idInput" required oninput="hideTable()" /><br /><br />
+      <input id="submit" type="submit" value="Kad ce mi bus??" />
     </form>
     <br />
     <div id="result">
