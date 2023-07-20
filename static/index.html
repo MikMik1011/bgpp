@@ -28,6 +28,7 @@
       function changeBg() {
         let choice = document.getElementById("city").value;
         document.body.style.backgroundImage = `url('${pics[choice]}')`;
+        moveMapToCityCentre(choice);
       }
       /*function hideTable(){
         var tabela = document.getElementById("result");

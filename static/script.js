@@ -13,6 +13,17 @@ const stationIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
+const cityCentres = {
+  bg: [44.81254796404323, 20.46145496621977],
+  ns: [45.267136, 19.833549],
+  nis: [43.3209, 21.8958],
+};
+
+const moveMapToCityCentre = (city) => {
+  console.log(`Moving map to ${city} centre`);
+  if (!interval) map.setView(cityCentres[city], 13, { animation: true });
+};
+
 const formatSeconds = (seconds) => {
   let minutes = Math.floor(seconds / 60);
   let secondsLeft = seconds % 60;
