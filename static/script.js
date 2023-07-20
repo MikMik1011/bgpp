@@ -23,6 +23,7 @@ const formatSeconds = (seconds) => {
 const updateDisplay = (city, id, recenter) => {
   let url = `/api/stations/${city}/search?id=${id}`;
   $("#updateInProgress").show();
+  $("#error").hide();
 
   $.ajax({
     url: url,
@@ -67,7 +68,8 @@ const updateDisplay = (city, id, recenter) => {
     },
     error: function (error) {
       console.error("Error sending request:", error);
-      // Handle error here
+      $("#updateInProgress").hide();
+      $("#error").show();
     },
   });
 };
@@ -100,7 +102,7 @@ $(document).ready(function () {
   $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
 
-    let id = encodeURIComponent($("#idInput").val());
+    let id = encodeURIComponent($("#idInput").val().trim());
     let city = encodeURIComponent($("#city").val());
     updateDisplay(city, id, true);
 
