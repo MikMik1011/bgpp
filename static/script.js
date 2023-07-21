@@ -117,7 +117,7 @@ $(document).ready(function () {
     let city = encodeURIComponent($("#city").val());
     updateDisplay(city, id, true);
 
-    clearInterval(interval);
+    interval = clearInterval(interval);
     interval = setInterval(() => {
       updateDisplay(city, id, false);
     }, 10 * 1000);

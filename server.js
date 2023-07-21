@@ -122,7 +122,7 @@ async function getAllStations(city) {
 
 function getAvaliableCities() {
   let cities = new Object();
-  for (id of Object.keys(apikeys)) cities[id] = apikeys[id].name;
+  for (id of Object.keys(allStations)) cities[id] = apikeys[id].name;
   return cities;
 }
 
