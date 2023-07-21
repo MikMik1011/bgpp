@@ -62,12 +62,15 @@ function transformStationResponse(response, city) {
   return newResp;
 }
 
-async function populateMap() {
-  console.log("Populating map started");
+async function populateMap(force = false) {
+
   for (const city of Object.keys(apikeys)) {
+    if (!force && id_uid_map[city]) {
+      continue;
+    }
+
     try {
       const stations = await getAllStations(city);
-      console.log(`Fetched all stations in ${city}`);
 
       id_uid_map[city] = {};
 
@@ -80,9 +83,6 @@ async function populateMap() {
       console.log(`Populating map finished for ${city}`);
     }
   }
-
-  console.log("Populating map finished");
-  console.log("Cities populated: ", Object.keys(id_uid_map));
 }
 
 async function doRequest(url, apikey) {
@@ -101,12 +101,11 @@ async function getStationInfo(city, query) {
   const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?station_uid=`;
   if (query.uid) var url = baseUrl + query.uid;
   else if (query.id) {
-    if (!id_uid_map[city]) throw new Error("Invalid ID (or maybe map is not populated yet?)");
+    if (!id_uid_map[city])
+      throw new Error("Invalid ID (or maybe map is not populated yet?)");
     var url = baseUrl + id_uid_map[city][query.id.toString()];
-  }
+  } else throw new Error("Invalid query");
 
-  else throw new Error("Invalid query");
-  
   let resp = await doRequest(url, apikeys[city].key);
   return transformStationResponse(resp, city);
 }
@@ -120,7 +119,8 @@ async function getAllStations(city) {
   return allStations[city];
 }
 
-function getAvaliableCities() {
+async function getAvaliableCities() {
+  await populateMap();
   let cities = new Object();
   for (id of Object.keys(allStations)) cities[id] = apikeys[id].name;
   return cities;
@@ -148,7 +148,7 @@ fastify.get("/api/stations/:city/all", async (request, reply) => {
 });
 fastify.get("/api/cities", async (request, reply) => {
   try {
-    const response = getAvaliableCities();
+    const response = await getAvaliableCities();
     reply.send(response);
   } catch (err) {
     console.error(err);
@@ -159,7 +159,7 @@ fastify.get("/", (request, reply) => reply.sendFile("index.html"));
 
 (async () => {
   try {
-    await populateMap();
+    await populateMap(true);
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
   } catch (err) {
     console.error(err);
