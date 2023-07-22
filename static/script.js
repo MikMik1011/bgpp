@@ -1,4 +1,4 @@
-let interval;
+let currInterval;
 let map, layerGroup;
 let lastStationId = 0;
 
@@ -21,7 +21,7 @@ const cityCentres = {
 
 const moveMapToCityCentre = (city) => {
   console.log(`Moving map to ${city} centre`);
-  if (!interval) map.setView(cityCentres[city], 13, { animation: true });
+  if (!currInterval) map.setView(cityCentres[city], 13, { animation: true });
 };
 
 const formatSeconds = (seconds) => {
@@ -29,6 +29,31 @@ const formatSeconds = (seconds) => {
   let secondsLeft = seconds % 60;
   if (secondsLeft < 10) secondsLeft = `0${secondsLeft}`;
   return `${minutes}:${secondsLeft}`;
+};
+
+const spawnInterval = () => {
+  let id = encodeURIComponent($("#idInput").val().trim());
+  if (!id) return;
+
+  let city = encodeURIComponent($("#city").val());
+  updateDisplay(city, id, true);
+
+  currInterval = clearInterval(currInterval);
+  currInterval = setInterval(() => {
+    updateDisplay(city, id, false);
+  }, 10 * 1000);
+};
+
+const handleTabOut = () => {
+  if (!$("#dataSaver").is(":checked")) return;
+  console.log("tab out")
+  clearInterval(currInterval);
+};
+
+const handleTabIn = () => {
+  if (!$("#dataSaver").is(":checked")) return;
+  console.log("tab in")
+  spawnInterval();
 };
 
 const updateDisplay = (city, id, recenter) => {
@@ -86,6 +111,9 @@ const updateDisplay = (city, id, recenter) => {
 };
 
 $(document).ready(function () {
+  $(window).on("blur", handleTabOut);
+  $(window).on("focus", handleTabIn);
+
   map = L.map("map", {
     center: [44.81254796404323, 20.46145496621977],
     zoom: 13,
@@ -112,14 +140,6 @@ $(document).ready(function () {
 
   $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
-
-    let id = encodeURIComponent($("#idInput").val().trim());
-    let city = encodeURIComponent($("#city").val());
-    updateDisplay(city, id, true);
-
-    interval = clearInterval(interval);
-    interval = setInterval(() => {
-      updateDisplay(city, id, false);
-    }, 10 * 1000);
+    spawnInterval();
   });
 });
