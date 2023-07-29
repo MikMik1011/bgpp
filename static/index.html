@@ -40,20 +40,10 @@
         document.body.style.backgroundImage = `url('${pics[choice]}')`;
         moveMapToCityCentre(choice);
       }
-      /*function hideTable(){
-        var tabela = document.getElementById("result");
-        var idStan = document.getElementById('idInput');
-        if (idStan.value == '' || idStan.value == ' ') {
-          tabela.style.display = 'none';
-        }
-        else {
-          tabela.style.display = 'block';
-        }
-      }*/
 
       function hideTable() {
         const tabela = document.getElementsByTagName("table");
-        var idStan = document.getElementById("idInput");
+        var idStan = document.getElementById("id-input");
         if (idStan.value == "") {
           for (let i = 0; i < tabela.length; i++) {
             tabela[i].style.display = "none";
@@ -73,21 +63,21 @@
       <select id="city" name="city" onchange="changeBg()"></select>
       <br />
       <br />
-      <label for="idInput">ID stanice:</label>
+      
+      <label for="id-input">ID stanice:</label>
       <input
         type="text"
-        id="idInput"
-        name="idInput"
+        id="id-input"
+        name="id-input"
         required
         oninput="hideTable()"
       /><br />
       <br />
-      <label for="dataSaver">Usteda podataka:</label>
-      <input type="checkbox" id="dataSaver" name="dataSaver" checked /> <br />
-      <br />
       <input id="submit" type="submit" value="Kad ce mi bus??" />
     </form>
     <br />
+    <label for="dataSaver">Usteda podataka:</label>
+    <input type="checkbox" id="dataSaver" name="dataSaver" checked /> <br />
     <div id="result">
       <p id="stationName"></p>
       <p id="lastUpdated"></p>
@@ -95,7 +85,7 @@
       <p id="error" style="display: none">Greška pri ažuriranju!</p>
       <br />
       <table id="tabela" border="2">
-        <thead class="thead-dark">
+        <thead id="thead" class="thead-dark">
           <tr>
             <th scope="col">Linija</th>
             <th scope="col">ETA</th>

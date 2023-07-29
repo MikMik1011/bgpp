@@ -7,7 +7,7 @@ body {
     background-size: cover;
 }
 
-#stationName #error {
+#stationName, #error {
     font-weight: bold;
 }
 
