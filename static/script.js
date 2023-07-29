@@ -32,7 +32,7 @@ const formatSeconds = (seconds) => {
 };
 
 const spawnInterval = () => {
-  let id = encodeURIComponent($("#idInput").val().trim());
+  let id = encodeURIComponent($("#id-input").val().trim());
   if (!id) return;
 
   let city = encodeURIComponent($("#city").val());
