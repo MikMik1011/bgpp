@@ -35,10 +35,8 @@
         nis: "static/Pics/nis.jpg",
       };
 
-      function changeBg() {
-        let choice = document.getElementById("city").value;
-        document.body.style.backgroundImage = `url('${pics[choice]}')`;
-        moveMapToCityCentre(choice);
+      function changeBg(city) {
+        document.body.style.backgroundImage = `url('${pics[city]}')`;
       }
 
       function hideTable() {
@@ -60,10 +58,18 @@
     <h1>srbus</h1>
     <h3>Fixamo fix ideje since 2023</h3>
     <form id="myForm">
-      <select id="city" name="city" onchange="changeBg()"></select>
+      <select id="city" name="city" onchange="onCityChange()"></select>
       <br />
       <br />
-      
+      <label for="searchType">Tip pretrage:</label>
+      <select id="searchType" name="searchType">
+        <option value="id">ID stanice</option>
+        <option value="name" disabled>Ime stanice (USKORO)</option>
+        <option value="coords" disabled>Lokacija (USKORO)</option>
+        <option value="favorites" disabled>Omiljene stanice (USKORO)</option>
+      </select>
+      <br />
+      <br />
       <label for="id-input">ID stanice:</label>
       <input
         type="text"
