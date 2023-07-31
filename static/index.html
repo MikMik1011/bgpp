@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <html>
   <head>
     <title>bg++</title>
@@ -44,7 +44,6 @@
       function changeBg(city) {
         document.body.style.backgroundImage = `url('${pics[city]}')`;
       }
-
     </script>
   </head>
   <body class="body" onload="toggleTable()">
@@ -59,7 +58,7 @@
       <label for="searchMode">Tip pretrage:</label>
       <select id="searchMode" name="searchMode" onchange="onSearchModeChange()">
         <option value="name">Ime/ID stanice</option>
-        <option value="coords" disabled>Lokacija (USKORO)</option>
+        <option value="coords">Lokacija</option>
         <option value="address" disabled>Adresa (USKORO)</option>
         <option value="favorites" disabled>Omiljene stanice (USKORO)</option>
       </select>
@@ -68,7 +67,37 @@
 
       <div class="name-search" style="display: none">
         <label for="name-input">Ime/ID stanice:</label>
-        <select class="select2" id="name-input" onchange="toggleTable()"></select>
+        <select
+          class="select2"
+          id="name-input"
+          onchange="toggleTable()"
+        ></select>
+        <br />
+        <br />
+      </div>
+
+      <div class="coords-search" style="display: none">
+        <button type="button" onclick="searchByGPS()">
+          Pronadji najbliže stanice
+        </button>
+        <br />
+        <br />
+        <label for="stationsQty">Količina najbližih stanica:</label>
+        <input
+          type="number"
+          id="quantity-input"
+          name="quantity-input"
+          value="10"
+        />
+        <br />
+        <br />
+        <label for="coords-input">Stanica:</label>
+        <select
+          class="select2"
+          id="coords-input"
+          onchange="toggleTable()"
+          style="display: none"
+        ></select>
         <br />
         <br />
       </div>

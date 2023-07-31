@@ -1,60 +1,63 @@
 body {
-    text-align: center;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-image: url('Pics/beograd.jpg');
-    background-size: cover;
+  text-align: center;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-image: url("Pics/beograd.jpg");
+  background-size: cover;
 }
 
-#stationName, #error {
-    font-weight: bold;
+#stationName,
+#error {
+  font-weight: bold;
 }
 
-#lastUpdated, #updateInProgress {
-    font-style: italic;
+#lastUpdated,
+#updateInProgress {
+  font-style: italic;
 }
 
 #map {
-    width: 30vw;
-    height: 30vw;
+  width: 30vw;
+  height: 30vw;
 }
 #result {
-    margin: auto; 
+  margin: auto;
 }
 #map {
-    border: 2px solid black;
-    margin: auto;
+  border: 2px solid black;
+  margin: auto;
 }
 #tabela {
-    color: white;
-    font-size: large;
-    border: 2px solid black;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin: auto;
-    display: none;
+  color: white;
+  font-size: large;
+  border: 2px solid black;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: auto;
+  display: none;
 }
-#submit {
-    cursor: pointer;
-    border: 2px solid black;
-    width: 15%;
-    padding: 1vh;
-    border-radius: 35px;
-    background: transparent;
-    transition: all .2s ease-in-out;
+#submit,
+button {
+  cursor: pointer;
+  border: 2px solid black;
+  width: 15%;
+  padding: 1vh;
+  border-radius: 35px;
+  background: transparent;
+  transition: all 0.2s ease-in-out;
 }
-#submit:hover {
-    transform: scale(1.1);
+#submit:hover,
+button:hover {
+  transform: scale(1.1);
 }
 
 @media screen and (max-width: 600px) {
-    #map {
-        width: 100vw;
-        height: 50vh;
-    }
-    #submit {
-        width: 35%;
-    }
-    
+  #map {
+    width: 100vw;
+    height: 50vh;
+  }
+  #submit {
+    width: 35%;
+  }
 }
