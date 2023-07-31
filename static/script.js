@@ -1,7 +1,6 @@
 let currInterval;
 let map, layerGroup;
-let currQuery;
-let allStations = {};
+let lastStationId = 0;
 
 const stationIcon = new L.Icon({
   iconUrl:
@@ -14,63 +13,15 @@ const stationIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const fetchCityStations = (city) => {
-  let url = `/api/stations/${city}/all`;
-  $.ajax({
-    url: url,
-    type: "GET",
-    success: (response) => {
-      allStations[city] = response;
-      console.log(allStations);
-      fillNameSearch(city);
-    },
-    error: (error) => {
-      console.error("Error sending request:", error);
-    },
-  });
+const cityCentres = {
+  bg: [44.81254796404323, 20.46145496621977],
+  ns: [45.267136, 19.833549],
+  nis: [43.3209, 21.8958],
 };
 
 const moveMapToCityCentre = (city) => {
-  const cityCentres = {
-    bg: [44.81254796404323, 20.46145496621977],
-    ns: [45.267136, 19.833549],
-    nis: [43.3209, 21.8958],
-  };
-
   console.log(`Moving map to ${city} centre`);
   if (!currInterval) map.setView(cityCentres[city], 13, { animation: true });
-};
-
-const fillNameSearch = (city) => {
-  let stations = allStations[city];
-  let names = stations.map((station) => {
-    return `<option value="${station.uid}">${station.name} (${station.id})</option>`;
-  });
-  console.log(names);
-  $("#name-input").html(names);
-};
-
-const onCityChange = () => {
-  let city = encodeURIComponent($("#city").val());
-  changeBg(city);
-  moveMapToCityCentre(city);
-  if (!allStations[city]) fetchCityStations(city);
-  else fillNameSearch(city);
-};
-
-const getSearchMode = () => {
-  return $("#searchMode").val();
-}
-
-const onSearchModeChange = () => {
-  let searchMode = $("#searchMode").val();
-  $("#searchMode option")
-    .toArray()
-    .map((option) => {
-      let value = $(option).val();
-      if (value === searchMode) $(`.${value}-search`).show();
-      else $(`.${value}-search`).hide();
-    });
 };
 
 const formatSeconds = (seconds) => {
@@ -80,73 +31,78 @@ const formatSeconds = (seconds) => {
   return `${minutes}:${secondsLeft}`;
 };
 
-const checkDataSaver = () => {
-  return $("#dataSaver").is(":checked");
+const spawnInterval = () => {
+  let id = encodeURIComponent($("#id-input").val().trim());
+  if (!id) return;
+
+  let city = encodeURIComponent($("#city").val());
+  updateDisplay(city, id, true);
+
+  currInterval = clearInterval(currInterval);
+  currInterval = setInterval(() => {
+    updateDisplay(city, id, false);
+  }, 10 * 1000);
 };
 
 const handleTabOut = () => {
-  if (!checkDataSaver()) return;
-  console.log("tab out");
+  if (!$("#dataSaver").is(":checked")) return;
+  console.log("tab out")
   clearInterval(currInterval);
 };
 
 const handleTabIn = () => {
-  if (!checkDataSaver()) return;
-  console.log("tab in");
+  if (!$("#dataSaver").is(":checked")) return;
+  console.log("tab in")
   spawnInterval();
 };
 
-const updateArrivals = (response, recenter) => {
-  let date = new Date();
-  response.vehicles.reverse();
-
-  let name = `${response.name} (${response.id})`;
-  $("#stationName").html(name);
-  $("#lastUpdated").html(
-    `Poslednji put ažurirano: ${date.toLocaleTimeString()}`
-  );
-  $("#updateInProgress").hide();
-
-  layerGroup.clearLayers();
-  console.log(response.coords);
-  if (recenter) map.setView(response.coords, 13, { animation: true });
-
-  let marker = new L.marker(response.coords, { icon: stationIcon });
-  marker.addTo(layerGroup);
-
-  const tableData = response.vehicles
-    .map((value) => {
-      let marker = new L.marker(value.coords);
-      marker.bindTooltip(value.lineNumber, {
-        permanent: true,
-        direction: "center",
-        className: "my-labels",
-      });
-      marker.addTo(layerGroup);
-      return `<tr>
-                    <td>${value.lineNumber}</td>
-                    <td>${formatSeconds(value.secondsLeft)}</td>
-                    <td>${value.stationsBetween}</td>
-                    <td>${value.stationName}</td>
-                    <td>${value.garageNo}</td>
-                </tr>`;
-    })
-    .join("");
-  $("#tableBody").html(tableData);
-};
-
-const fetchArrivals = (city, query, recenter) => {
-  let url = `/api/stations/${city}/search?${$.param(query)}`;
+const updateDisplay = (city, id, recenter) => {
+  let url = `/api/stations/${city}/search?id=${id}`;
   $("#updateInProgress").show();
   $("#error").hide();
 
   $.ajax({
     url: url,
     type: "GET",
-    success: (response) => {
-      updateArrivals(response, recenter);
+    success: function (response) {
+      let date = new Date();
+      response.vehicles.reverse();
+
+      let name = `${response.name} (${response.id})`;
+      $("#stationName").html(name);
+      $("#lastUpdated").html(
+        `Poslednji put ažurirano: ${date.toLocaleTimeString()}`
+      );
+      $("#updateInProgress").hide();
+
+      layerGroup.clearLayers();
+      console.log(response.coords);
+      if (recenter) map.setView(response.coords, 13, { animation: true });
+
+      let marker = new L.marker(response.coords, { icon: stationIcon });
+      marker.addTo(layerGroup);
+
+      const tableData = response.vehicles
+        .map((value) => {
+          let marker = new L.marker(value.coords);
+          marker.bindTooltip(value.lineNumber, {
+            permanent: true,
+            direction: "center",
+            className: "my-labels",
+          });
+          marker.addTo(layerGroup);
+          return `<tr>
+                        <td>${value.lineNumber}</td>
+                        <td>${formatSeconds(value.secondsLeft)}</td>
+                        <td>${value.stationsBetween}</td>
+                        <td>${value.stationName}</td>
+                        <td>${value.garageNo}</td>
+                    </tr>`;
+        })
+        .join("");
+      $("#tableBody").html(tableData);
     },
-    error: (error) => {
+    error: function (error) {
       console.error("Error sending request:", error);
       $("#updateInProgress").hide();
       $("#error").show();
@@ -154,20 +110,10 @@ const fetchArrivals = (city, query, recenter) => {
   });
 };
 
-const spawnInterval = (query = undefined) => {
-  if (!query) query = currQuery;
-  if (!query) return;
+$(document).ready(function () {
+  $(window).on("blur", handleTabOut);
+  $(window).on("focus", handleTabIn);
 
-  let city = encodeURIComponent($("#city").val());
-  fetchArrivals(city, query, true);
-
-  currInterval = clearInterval(currInterval);
-  currInterval = setInterval(() => {
-    fetchArrivals(city, query, false);
-  }, 10 * 1000);
-};
-
-const initMap = () => {
   map = L.map("map", {
     center: [44.81254796404323, 20.46145496621977],
     zoom: 13,
@@ -176,45 +122,24 @@ const initMap = () => {
 
   L.control.layers(mapLayers).addTo(map);
   mapLayers.Transport.addTo(map);
-};
-
-const submitByName = () => {
-  let uid = encodeURIComponent($("#name-input").val().trim());
-  currQuery = { uid: uid };
-  spawnInterval(currQuery);
-};
-
-const submitHandlers = {
-  name: submitByName
-}
-
-$(document).ready(() => {
-  $(window).on("blur", handleTabOut);
-  $(window).on("focus", handleTabIn);
-
-  initMap();
-  $(".select2").select2({width: "resolve"});
 
   $.ajax({
     url: "/api/cities",
     type: "GET",
-    success: (response) => {
+    success: function (response) {
       let cities = Object.entries(response).map(([key, value]) => {
         return `<option value="${key}">${value}</option>`;
       });
       $("#city").html(cities);
-      onCityChange();
-      onSearchModeChange();
     },
-    error: (error) => {
+    error: function (error) {
       console.error("Error sending request:", error);
       // Handle error here
     },
   });
 
-  $("#myForm").submit((event) => {
+  $("#myForm").submit(function (event) {
     event.preventDefault(); // Prevent form from being submitted
-    console.log(getSearchMode())
-    submitHandlers[getSearchMode()]();
+    spawnInterval();
   });
 });
