@@ -3,16 +3,32 @@ let map, layerGroup;
 let currQuery;
 let allStations = {};
 
-const stationIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -14],
-  shadowSize: [41, 41],
-});
+const coloredIcon = (color) => {
+  return new L.Icon({
+    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+    shadowUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -14],
+    shadowSize: [41, 41],
+  });
+};
+
+const createMarker = (coords, name = undefined, color = "blue") => {
+  let marker = new L.marker(coords, { icon: coloredIcon(color) });
+  if (name)
+    marker.bindTooltip(name, {
+      permanent: true,
+      direction: "center",
+      className: "my-labels",
+    });
+  return marker;
+};
+
+const addMarker = (coords, name = undefined, color = "blue") => {
+  createMarker(coords, name, color).addTo(layerGroup);
+};
 
 const fetchCityStations = (city) => {
   let url = `/api/stations/${city}/all`;
@@ -50,17 +66,21 @@ const fillNameSearch = (city) => {
   $("#name-input").html(names);
 };
 
+const getSearchMode = () => {
+  return $("#searchMode").val();
+};
+
+const getCity = () => {
+  return encodeURIComponent($("#city").val());
+};
+
 const onCityChange = () => {
-  let city = encodeURIComponent($("#city").val());
+  let city = getCity();
   changeBg(city);
   moveMapToCityCentre(city);
   if (!allStations[city]) fetchCityStations(city);
   else fillNameSearch(city);
 };
-
-const getSearchMode = () => {
-  return $("#searchMode").val();
-}
 
 const onSearchModeChange = () => {
   let searchMode = $("#searchMode").val();
@@ -105,6 +125,8 @@ const updateArrivals = (response, recenter) => {
   $("#lastUpdated").html(
     `Poslednji put ažurirano: ${date.toLocaleTimeString()}`
   );
+  $("#stationName").show();
+  $("#lastUpdated").show();
   $("#updateInProgress").hide();
   toggleTable();
 
@@ -112,18 +134,12 @@ const updateArrivals = (response, recenter) => {
   console.log(response.coords);
   if (recenter) map.setView(response.coords, 13, { animation: true });
 
-  let marker = new L.marker(response.coords, { icon: stationIcon });
-  marker.addTo(layerGroup);
+  markers = [];
+  markers.push(createMarker(response.coords, "", "yellow"));
 
   const tableData = response.vehicles
     .map((value) => {
-      let marker = new L.marker(value.coords);
-      marker.bindTooltip(value.lineNumber, {
-        permanent: true,
-        direction: "center",
-        className: "my-labels",
-      });
-      marker.addTo(layerGroup);
+      markers.push(createMarker(value.coords, value.lineNumber));
       return `<tr>
                     <td>${value.lineNumber}</td>
                     <td>${formatSeconds(value.secondsLeft)}</td>
@@ -134,6 +150,8 @@ const updateArrivals = (response, recenter) => {
     })
     .join("");
   $("#tableBody").html(tableData);
+  let group = L.featureGroup(markers).addTo(layerGroup);
+  if (recenter) map.fitBounds(group.getBounds());
 };
 
 const fetchArrivals = (city, query, recenter) => {
@@ -159,7 +177,7 @@ const spawnInterval = (query = undefined) => {
   if (!query) query = currQuery;
   if (!query) return;
 
-  let city = encodeURIComponent($("#city").val());
+  let city = getCity();
   fetchArrivals(city, query, true);
 
   currInterval = clearInterval(currInterval);
@@ -185,9 +203,16 @@ const submitByName = () => {
   spawnInterval(currQuery);
 };
 
+const submitByCoords = () => {
+  let uid = encodeURIComponent($("#coords-input").val().trim());
+  currQuery = { uid: uid };
+  spawnInterval(currQuery);
+};
+
 const submitHandlers = {
-  name: submitByName
-}
+  name: submitByName,
+  coords: submitByCoords,
+};
 
 const toggleTable = () => {
   const tabela = document.getElementsByTagName("table");
@@ -200,14 +225,115 @@ const toggleTable = () => {
       tabela[i].style.display = "table";
     }
   }
-}
+};
+
+const getUserLocation = async () => {
+  return new Promise((resolve, reject) => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          resolve(userLocation);
+        },
+        (error) => {
+          reject(error.message);
+        }
+      );
+    } else {
+      reject("Geolocation is not available in this browser.");
+    }
+  });
+};
+
+const getDistanceFromCoords = (lat1, lon1, lat2, lon2) => {
+  const earthRadiusInMeters = 6371000; // Earth's radius in meters
+  const deltaLat = (lat2 - lat1) * (Math.PI / 180);
+  const deltaLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(deltaLon / 2) *
+      Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = earthRadiusInMeters * c;
+  return distance;
+};
+
+const findClosestStations = async (
+  userLocation,
+  stationsArray,
+  numberOfStations = 10
+) => {
+  // Calculate distances for all stations and store in an array of { station, distance } objects
+  const stationsWithDistances = stationsArray.map((station) => {
+    const distance = getDistanceFromCoords(
+      userLocation.latitude,
+      userLocation.longitude,
+      ...station.coords
+    );
+    return { station, distance };
+  });
+
+  // Sort the stations based on the calculated distances
+  stationsWithDistances.sort((a, b) => a.distance - b.distance);
+
+  // Select the top numberOfStations stations (closest stations) and extract the station objects
+  const closestStations = stationsWithDistances
+    .slice(0, numberOfStations)
+    .map((station) => {
+      station.distance = Math.round(station.distance);
+      return station;
+    });
+
+  return closestStations;
+};
+
+const cancelInterval = () => {
+  currInterval = clearInterval(currInterval);
+  currQuery = undefined;
+  layerGroup.clearLayers();
+  toggleTable();
+  $("#stationName").hide();
+  $("#lastUpdated").hide();
+};
+
+const searchByGPS = async () => {
+  const quantity = $("#quantity-input").val();
+  const userLocation = await getUserLocation();
+  const closestStations = await findClosestStations(
+    userLocation,
+    allStations[getCity()],
+    quantity
+  );
+  layerGroup.clearLayers();
+  cancelInterval();
+
+  markers = [];
+  markers.push(
+    createMarker([userLocation.latitude, userLocation.longitude], "", "green")
+  );
+  let options = closestStations.map((station) => {
+    markers.push(
+      createMarker(station.station.coords, station.station.id, "yellow")
+    );
+    return `<option value="${station.station.uid}">${station.station.name} (${station.station.id}) | ${station.distance}m</option>`;
+  });
+  $("#coords-input").html(options).trigger("change");
+
+  let group = new L.featureGroup(markers).addTo(layerGroup);
+  map.fitBounds(group.getBounds());
+};
 
 $(document).ready(() => {
   $(window).on("blur", handleTabOut);
   $(window).on("focus", handleTabIn);
 
   initMap();
-  $(".select2").select2({width: "resolve"});
+  $(".select2").select2({ width: "resolve" });
 
   $.ajax({
     url: "/api/cities",
@@ -228,7 +354,6 @@ $(document).ready(() => {
 
   $("#myForm").submit((event) => {
     event.preventDefault(); // Prevent form from being submitted
-    console.log(getSearchMode())
     submitHandlers[getSearchMode()]();
   });
 });
