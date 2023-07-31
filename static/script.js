@@ -106,6 +106,7 @@ const updateArrivals = (response, recenter) => {
     `Poslednji put ažurirano: ${date.toLocaleTimeString()}`
   );
   $("#updateInProgress").hide();
+  toggleTable();
 
   layerGroup.clearLayers();
   console.log(response.coords);
@@ -186,6 +187,19 @@ const submitByName = () => {
 
 const submitHandlers = {
   name: submitByName
+}
+
+const toggleTable = () => {
+  const tabela = document.getElementsByTagName("table");
+  if (!currQuery) {
+    for (let i = 0; i < tabela.length; i++) {
+      tabela[i].style.display = "none";
+    }
+  } else {
+    for (let i = 0; i < tabela.length; i++) {
+      tabela[i].style.display = "table";
+    }
+  }
 }
 
 $(document).ready(() => {
