@@ -1,6 +1,6 @@
 let currInterval;
 let map, layerGroup;
-let currStationUID;
+let currQuery;
 let allStations = {};
 
 const stationIcon = new L.Icon({
@@ -22,6 +22,7 @@ const fetchCityStations = (city) => {
     success: (response) => {
       allStations[city] = response;
       console.log(allStations);
+      fillNameSearch(city);
     },
     error: (error) => {
       console.error("Error sending request:", error);
@@ -40,12 +41,26 @@ const moveMapToCityCentre = (city) => {
   if (!currInterval) map.setView(cityCentres[city], 13, { animation: true });
 };
 
+const fillNameSearch = (city) => {
+  let stations = allStations[city];
+  let names = stations.map((station) => {
+    return `<option value="${station.uid}">${station.name} (${station.id})</option>`;
+  });
+  console.log(names);
+  $("#name-input").html(names);
+};
+
 const onCityChange = () => {
   let city = encodeURIComponent($("#city").val());
   changeBg(city);
   moveMapToCityCentre(city);
   if (!allStations[city]) fetchCityStations(city);
+  else fillNameSearch(city);
 };
+
+const getSearchMode = () => {
+  return $("#searchMode").val();
+}
 
 const onSearchModeChange = () => {
   let searchMode = $("#searchMode").val();
@@ -139,16 +154,16 @@ const fetchArrivals = (city, query, recenter) => {
   });
 };
 
-const spawnInterval = () => {
-  let id = encodeURIComponent($("#id-input").val().trim());
-  if (!id) return;
+const spawnInterval = (query = undefined) => {
+  if (!query) query = currQuery;
+  if (!query) return;
 
   let city = encodeURIComponent($("#city").val());
-  fetchArrivals(city, { id: id }, true);
+  fetchArrivals(city, query, true);
 
   currInterval = clearInterval(currInterval);
   currInterval = setInterval(() => {
-    fetchArrivals(city, { id: id }, false);
+    fetchArrivals(city, query, false);
   }, 10 * 1000);
 };
 
@@ -163,11 +178,22 @@ const initMap = () => {
   mapLayers.Transport.addTo(map);
 };
 
+const submitByName = () => {
+  let uid = encodeURIComponent($("#name-input").val().trim());
+  currQuery = { uid: uid };
+  spawnInterval(currQuery);
+};
+
+const submitHandlers = {
+  name: submitByName
+}
+
 $(document).ready(() => {
   $(window).on("blur", handleTabOut);
   $(window).on("focus", handleTabIn);
 
   initMap();
+  $(".select2").select2({width: "resolve"});
 
   $.ajax({
     url: "/api/cities",
@@ -178,6 +204,7 @@ $(document).ready(() => {
       });
       $("#city").html(cities);
       onCityChange();
+      onSearchModeChange();
     },
     error: (error) => {
       console.error("Error sending request:", error);
@@ -187,6 +214,7 @@ $(document).ready(() => {
 
   $("#myForm").submit((event) => {
     event.preventDefault(); // Prevent form from being submitted
-    spawnInterval();
+    console.log(getSearchMode())
+    submitHandlers[getSearchMode()]();
   });
 });
