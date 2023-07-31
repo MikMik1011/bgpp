@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<meta charset="UTF-8">
 <html>
   <head>
     <title>bg++</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="static/index.css" />
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -15,19 +17,23 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/easy-toggle-state/1.16.0/easy-toggle-state.min.js"
-      integrity="sha512-hG7MyW8uOh26+C0KutsTVCJm8waH4iA9vSa8gOsosTHdIh6JjOE/MRn8vmcFg2rLGTnpVWmSKcDJF48cB89/3w=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script
       data-goatcounter="https://goat.hepicgamerz.com/count"
       src="static/count.js"
     ></script>
+
     <script src="static/script.js"></script>
     <script src="static/mapLayers.js"></script>
+
     <script>
       let pics = {
         bg: "static/Pics/beograd.jpg",
@@ -35,55 +41,52 @@
         nis: "static/Pics/nis.jpg",
       };
 
-      function changeBg() {
-        let choice = document.getElementById("city").value;
-        document.body.style.backgroundImage = `url('${pics[choice]}')`;
-        moveMapToCityCentre(choice);
+      function changeBg(city) {
+        document.body.style.backgroundImage = `url('${pics[city]}')`;
       }
 
-      function hideTable() {
-        const tabela = document.getElementsByTagName("table");
-        var idStan = document.getElementById("id-input");
-        if (idStan.value == "") {
-          for (let i = 0; i < tabela.length; i++) {
-            tabela[i].style.display = "none";
-          }
-        } else {
-          for (let i = 0; i < tabela.length; i++) {
-            tabela[i].style.display = "table";
-          }
-        }
-      }
     </script>
   </head>
-  <body class="body" onload="hideTable()">
+  <body class="body" onload="toggleTable()">
     <h1>srbus</h1>
     <h3>Fixamo fix ideje since 2023</h3>
+
     <form id="myForm">
-      <select id="city" name="city" onchange="changeBg()"></select>
+      <select id="city" name="city" onchange="onCityChange()"></select>
       <br />
       <br />
-      
-      <label for="id-input">ID stanice:</label>
-      <input
-        type="text"
-        id="id-input"
-        name="id-input"
-        required
-        oninput="hideTable()"
-      /><br />
+
+      <label for="searchMode">Tip pretrage:</label>
+      <select id="searchMode" name="searchMode" onchange="onSearchModeChange()">
+        <option value="name">Ime/ID stanice</option>
+        <option value="coords" disabled>Lokacija (USKORO)</option>
+        <option value="address" disabled>Adresa (USKORO)</option>
+        <option value="favorites" disabled>Omiljene stanice (USKORO)</option>
+      </select>
       <br />
+      <br />
+
+      <div class="name-search" style="display: none">
+        <label for="name-input">Ime/ID stanice:</label>
+        <select class="select2" id="name-input" onchange="toggleTable()"></select>
+        <br />
+        <br />
+      </div>
+
       <input id="submit" type="submit" value="Kad će mi bus?" />
     </form>
     <br />
+
     <label for="dataSaver">Ušteda podataka:</label>
     <input type="checkbox" id="dataSaver" name="dataSaver" checked /> <br />
+
     <div id="result">
       <p id="stationName"></p>
       <p id="lastUpdated"></p>
       <p id="updateInProgress" style="display: none">Ažuriranje u toku...</p>
       <p id="error" style="display: none">Greška pri ažuriranju!</p>
       <br />
+
       <table id="tabela" border="2">
         <thead id="thead" class="thead-dark">
           <tr>
@@ -96,6 +99,7 @@
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
+
       <div id="map"></div>
     </div>
   </body>
