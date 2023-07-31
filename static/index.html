@@ -61,20 +61,21 @@
       <select id="city" name="city" onchange="onCityChange()"></select>
       <br />
       <br />
-      <label for="searchType">Tip pretrage:</label>
-      <select id="searchType" name="searchType">
+      <label for="searchMode">Tip pretrage:</label>
+      <select id="searchMode" name="searchMode" onchange="onSearchModeChange()">
         <option value="id">ID stanice</option>
-        <option value="name" disabled>Ime stanice (USKORO)</option>
-        <option value="coords" disabled>Lokacija (USKORO)</option>
-        <option value="favorites" disabled>Omiljene stanice (USKORO)</option>
+        <option value="name">Ime stanice (USKORO)</option>
+        <option value="coords">Lokacija (USKORO)</option>
+        <option value="favorites">Omiljene stanice (USKORO)</option>
       </select>
       <br />
       <br />
-      <label for="id-input">ID stanice:</label>
+      <label class="id-search" for="id-input">ID stanice:</label>
       <input
         type="text"
         id="id-input"
         name="id-input"
+        class="id-search"
         required
         oninput="hideTable()"
       /><br />

@@ -29,6 +29,17 @@ const fetchCityStations = (city) => {
   });
 };
 
+const moveMapToCityCentre = (city) => {
+  const cityCentres = {
+    bg: [44.81254796404323, 20.46145496621977],
+    ns: [45.267136, 19.833549],
+    nis: [43.3209, 21.8958],
+  };
+
+  console.log(`Moving map to ${city} centre`);
+  if (!currInterval) map.setView(cityCentres[city], 13, { animation: true });
+};
+
 const onCityChange = () => {
   let city = encodeURIComponent($("#city").val());
   changeBg(city);
@@ -36,15 +47,15 @@ const onCityChange = () => {
   if (!allStations[city]) fetchCityStations(city);
 };
 
-const cityCentres = {
-  bg: [44.81254796404323, 20.46145496621977],
-  ns: [45.267136, 19.833549],
-  nis: [43.3209, 21.8958],
-};
-
-const moveMapToCityCentre = (city) => {
-  console.log(`Moving map to ${city} centre`);
-  if (!currInterval) map.setView(cityCentres[city], 13, { animation: true });
+const onSearchModeChange = () => {
+  let searchMode = $("#searchMode").val();
+  $("#searchMode option")
+    .toArray()
+    .map((option) => {
+      let value = $(option).val();
+      if (value === searchMode) $(`.${value}-search`).show();
+      else $(`.${value}-search`).hide();
+    });
 };
 
 const formatSeconds = (seconds) => {
@@ -54,27 +65,18 @@ const formatSeconds = (seconds) => {
   return `${minutes}:${secondsLeft}`;
 };
 
-const spawnInterval = () => {
-  let id = encodeURIComponent($("#id-input").val().trim());
-  if (!id) return;
-
-  let city = encodeURIComponent($("#city").val());
-  fetchArrivals(city, id, true);
-
-  currInterval = clearInterval(currInterval);
-  currInterval = setInterval(() => {
-    fetchArrivals(city, id, false);
-  }, 10 * 1000);
+const checkDataSaver = () => {
+  return $("#dataSaver").is(":checked");
 };
 
 const handleTabOut = () => {
-  if (!$("#dataSaver").is(":checked")) return;
+  if (!checkDataSaver()) return;
   console.log("tab out");
   clearInterval(currInterval);
 };
 
 const handleTabIn = () => {
-  if (!$("#dataSaver").is(":checked")) return;
+  if (!checkDataSaver()) return;
   console.log("tab in");
   spawnInterval();
 };
@@ -118,8 +120,8 @@ const updateArrivals = (response, recenter) => {
   $("#tableBody").html(tableData);
 };
 
-const fetchArrivals = (city, id, recenter) => {
-  let url = `/api/stations/${city}/search?id=${id}`;
+const fetchArrivals = (city, query, recenter) => {
+  let url = `/api/stations/${city}/search?${$.param(query)}`;
   $("#updateInProgress").show();
   $("#error").hide();
 
@@ -135,6 +137,19 @@ const fetchArrivals = (city, id, recenter) => {
       $("#error").show();
     },
   });
+};
+
+const spawnInterval = () => {
+  let id = encodeURIComponent($("#id-input").val().trim());
+  if (!id) return;
+
+  let city = encodeURIComponent($("#city").val());
+  fetchArrivals(city, { id: id }, true);
+
+  currInterval = clearInterval(currInterval);
+  currInterval = setInterval(() => {
+    fetchArrivals(city, { id: id }, false);
+  }, 10 * 1000);
 };
 
 const initMap = () => {
