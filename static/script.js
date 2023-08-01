@@ -266,7 +266,7 @@ const getDistanceFromCoords = (lat1, lon1, lat2, lon2) => {
 const findClosestStations = async (
   userLocation,
   stationsArray,
-  numberOfStations = 10
+  maxDistance = 300
 ) => {
   // Calculate distances for all stations and store in an array of { station, distance } objects
   const stationsWithDistances = stationsArray.map((station) => {
@@ -278,16 +278,15 @@ const findClosestStations = async (
     return { station, distance };
   });
 
-  // Sort the stations based on the calculated distances
-  stationsWithDistances.sort((a, b) => a.distance - b.distance);
+  let closestStations = stationsWithDistances.filter(
+    (item) => item.distance <= maxDistance
+  );
+  closestStations.sort((a, b) => a.distance - b.distance);
 
-  // Select the top numberOfStations stations (closest stations) and extract the station objects
-  const closestStations = stationsWithDistances
-    .slice(0, numberOfStations)
-    .map((station) => {
-      station.distance = Math.round(station.distance);
-      return station;
-    });
+  closestStations = closestStations.map((station) => {
+    station.distance = Math.round(station.distance);
+    return station;
+  });
 
   return closestStations;
 };
@@ -302,12 +301,13 @@ const cancelInterval = () => {
 };
 
 const searchByGPS = async () => {
-  const quantity = $("#quantity-input").val();
+  $("#updateInProgress").show();
+  const stationsMaxDistance = $("#stationsMaxDistance-input").val();
   const userLocation = await getUserLocation();
   const closestStations = await findClosestStations(
     userLocation,
     allStations[getCity()],
-    quantity
+    stationsMaxDistance
   );
   layerGroup.clearLayers();
   cancelInterval();
@@ -326,6 +326,7 @@ const searchByGPS = async () => {
 
   let group = new L.featureGroup(markers).addTo(layerGroup);
   map.fitBounds(group.getBounds());
+  $("#updateInProgress").hide();
 };
 
 $(document).ready(() => {
