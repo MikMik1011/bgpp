@@ -317,9 +317,16 @@ const searchByGPS = async () => {
     createMarker([userLocation.latitude, userLocation.longitude], "", "green")
   );
   let options = closestStations.map((station) => {
-    markers.push(
-      createMarker(station.station.coords, station.station.id, "yellow")
+    let marker = createMarker(
+      station.station.coords,
+      station.station.id,
+      "yellow"
     );
+    marker.on("click", () => {
+      $("#coords-input").val(station.station.uid).trigger("change");
+    });
+    markers.push(marker);
+
     return `<option value="${station.station.uid}">${station.station.name} (${station.station.id}) | ${station.distance}m</option>`;
   });
   $("#coords-input").html(options).trigger("change");
