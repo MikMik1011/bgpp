@@ -212,10 +212,6 @@ const submitByCoords = () => {
   spawnInterval(currQuery);
 };
 
-const submitHandlers = {
-  name: submitByName,
-  coords: submitByCoords,
-};
 
 const toggleTable = () => {
   const tabela = document.getElementsByTagName("table");
@@ -271,7 +267,6 @@ const findClosestStations = async (
   stationsArray,
   maxDistance = 300
 ) => {
-  // Calculate distances for all stations and store in an array of { station, distance } objects
   const stationsWithDistances = stationsArray.map((station) => {
     const distance = getDistanceFromCoords(
       userLocation.latitude,
@@ -303,12 +298,11 @@ const cancelInterval = () => {
   $("#lastUpdated").hide();
 };
 
-const searchByGPS = async () => {
+const searchByCoords = async (searchCoords, maxDistanceElemID, optionsElemID) => {
   $("#updateInProgress").show();
-  const stationsMaxDistance = $("#stationsMaxDistance-input").val();
-  const userLocation = await getUserLocation();
+  const stationsMaxDistance = $(maxDistanceElemID).val();
   const closestStations = await findClosestStations(
-    userLocation,
+    searchCoords,
     allStations[getCity()],
     stationsMaxDistance
   );
@@ -326,18 +320,30 @@ const searchByGPS = async () => {
       "yellow"
     );
     marker.on("click", () => {
-      $("#coords-input").val(station.station.uid).trigger("change");
+      $(optionsElemID).val(station.station.uid).trigger("change");
     });
     markers.push(marker);
 
     return `<option value="${station.station.uid}">${station.station.name} (${station.station.id}) | ${station.distance}m</option>`;
   });
-  $("#coords-input").html(options).trigger("change");
+  $(optionsElemID).html(options).trigger("change");
 
   let group = new L.featureGroup(markers).addTo(layerGroup);
   map.fitBounds(group.getBounds());
-  $("#updateInProgress").hide();
+  $(optionsElemID).hide();
 };
+
+const searchByGPS = async () => {
+  const userLocation = await getUserLocation();
+  searchByCoords(userLocation, "#stationsMaxDistance-input", "#coords-input");
+
+};
+
+const submitHandlers = {
+  name: submitByName,
+  coords: searchByGPS,
+};
+
 
 $(document).ready(async () => {
   $(window).on("blur", handleTabOut);
@@ -347,7 +353,7 @@ $(document).ready(async () => {
   $(".select2").select2({ width: "resolve" });
 
   let response = await doAsyncRequest("/api/cities");
-  
+
   let cities = Object.entries(response).map(([key, value]) => {
     return `<option value="${key}">${value}</option>`;
   });
