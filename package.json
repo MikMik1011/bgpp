@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "run": "node server.js",
+    "dev": "npx nodemon server.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +15,7 @@
     "fastify": "^4.19.2"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.3.3"
+    "@flydotio/dockerfile": "^0.3.3",
+    "nodemon": "^3.0.1"
   }
 }
