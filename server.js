@@ -63,7 +63,6 @@ function transformStationResponse(response, city) {
 }
 
 async function populateMap(force = false) {
-
   for (const city of Object.keys(apikeys)) {
     if (!force && id_uid_map[city]) {
       continue;
@@ -77,10 +76,9 @@ async function populateMap(force = false) {
       for (const station of stations) {
         id_uid_map[city][station.id.toString()] = station.uid.toString();
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
       console.log(`Populating map finished for ${city}`);
+    } catch (err) {
+      console.log(`Populating map failed for ${city}`);
     }
   }
 }
@@ -120,7 +118,7 @@ async function getAllStations(city) {
 }
 
 async function getAvaliableCities() {
-  await populateMap();
+  populateMap();
   let cities = new Object();
   for (id of Object.keys(allStations)) cities[id] = apikeys[id].name;
   return cities;

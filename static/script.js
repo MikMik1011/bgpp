@@ -171,6 +171,7 @@ const fetchArrivals = async (city, query, recenter) => {
   let response = await doAsyncRequest(url, "GET", undefined, () => {
     console.error("Error sending request:", error);
     $("#updateInProgress").hide();
+    $("#error").html("Greška pri ažuriranju podataka.");
     $("#error").show();
   });
   updateArrivals(response, recenter);
@@ -238,6 +239,8 @@ const getUserLocation = async () => {
           resolve(userLocation);
         },
         (error) => {
+          $("#error").html("Greška pri dobavljanju lokacije.");
+          $("#error").show();
           reject(error.message);
         }
       );
@@ -311,7 +314,7 @@ const searchByCoords = async (searchCoords, maxDistanceElemID, optionsElemID) =>
 
   markers = [];
   markers.push(
-    createMarker([userLocation.latitude, userLocation.longitude], "", "green")
+    createMarker([searchCoords.latitude, searchCoords.longitude], "", "green")
   );
   let options = closestStations.map((station) => {
     let marker = createMarker(
@@ -330,10 +333,11 @@ const searchByCoords = async (searchCoords, maxDistanceElemID, optionsElemID) =>
 
   let group = new L.featureGroup(markers).addTo(layerGroup);
   map.fitBounds(group.getBounds());
-  $(optionsElemID).hide();
+  $("#updateInProgress").hide();
 };
 
 const searchByGPS = async () => {
+  $("#error").hide();
   const userLocation = await getUserLocation();
   searchByCoords(userLocation, "#stationsMaxDistance-input", "#coords-input");
 
