@@ -4,7 +4,7 @@
 #
 
 app = "bgpp"
-primary_region = "otp"
+primary_region = "fra"
 
 [http_service]
   internal_port = 3000
