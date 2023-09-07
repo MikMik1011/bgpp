@@ -57,13 +57,25 @@
 
       <label for="searchMode">Tip pretrage:</label>
       <select id="searchMode" name="searchMode" onchange="onSearchModeChange()">
-        <option value="name">Ime/ID stanice</option>
+        <option value="id">ID stanice</option>
+        <option value="name">Ime stanice</option>
         <option value="coords">Lokacija</option>
         <option value="address" disabled>Adresa (USKORO)</option>
         <option value="favorites" disabled>Omiljene stanice (USKORO)</option>
       </select>
       <br />
       <br />
+
+      <div class="id-search" style="display: none">
+        <label class="id-search" for="id-input">ID stanice:</label>
+        <input
+          type="text"
+          id="id-input"
+          type="number"
+          inputmode="numeric"
+        /><br />
+        <br />
+      </div>
 
       <div class="name-search" style="display: none">
         <label for="name-input">Ime/ID stanice:</label>

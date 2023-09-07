@@ -201,6 +201,12 @@ const initMap = () => {
   mapLayers.Transport.addTo(map);
 };
 
+const submitByID = () => {
+  let id = encodeURIComponent($("#id-input").val().trim());
+  currQuery = { id: id };
+  spawnInterval(currQuery);
+};
+
 const submitByName = () => {
   let uid = encodeURIComponent($("#name-input").val().trim());
   currQuery = { uid: uid };
@@ -344,6 +350,7 @@ const searchByGPS = async () => {
 };
 
 const submitHandlers = {
+  id: submitByID,
   name: submitByName,
   coords: submitByCoords,
 };
