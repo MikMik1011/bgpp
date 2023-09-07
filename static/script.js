@@ -349,6 +349,21 @@ const searchByGPS = async () => {
 
 };
 
+const searchAddressQuery = async () => {
+  $("#error").hide();
+  const address = encodeURIComponent($("#address-query").val().trim());
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
+  const response = await doAsyncRequest(url, "GET", undefined, () => {
+    $("#error").html("Greška pri dobavljanju rezultata.");
+    $("#error").show();
+  });
+  let addresses = response.map((address) => {
+    return `<option value="${address.lat},${address.lon}">${address.display_name}</option>`;
+  });
+  $("#address-results").html(addresses).trigger("change");
+  //searchByCoords(searchCoords, "#stationsMaxDistance-input", "#coords-input");
+};
+
 const submitHandlers = {
   id: submitByID,
   name: submitByName,

@@ -60,7 +60,7 @@
         <option value="id">ID stanice</option>
         <option value="name">Ime stanice</option>
         <option value="coords">Lokacija</option>
-        <option value="address" disabled>Adresa (USKORO)</option>
+        <option value="address">Adresa (USKORO)</option>
         <option value="favorites" disabled>Omiljene stanice (USKORO)</option>
       </select>
       <br />
@@ -73,6 +73,7 @@
           id="id-input"
           type="number"
           inputmode="numeric"
+          oninput="toggleTable()"
         /><br />
         <br />
       </div>
@@ -94,7 +95,7 @@
         </button>
         <br />
         <br />
-        <label for="stationsMaxDistance">Najveća udaljenost (m):</label>
+        <label for="stationsMaxDistance-input">Najveća udaljenost (m):</label>
         <input
           type="number"
           id="stationsMaxDistance-input"
@@ -107,6 +108,30 @@
         <select
           class="select2"
           id="coords-input"
+          onchange="toggleTable()"
+          style="display: none"
+        ></select>
+        <br />
+        <br />
+      </div>
+
+      <div class="address-search" style="display: none">
+        <label for="address-query">Adresa:</label>
+        <input
+          id="address-query"
+          name="address-query"
+        />
+        <br />
+        <br />
+        <button type="button" onclick="searchAddressQuery()">
+          Pronadji stanice
+        </button>
+        <br />
+        <br />
+        <label for="address-results">Adresa:</label>
+        <select
+          class="select2"
+          id="address-results"
           onchange="toggleTable()"
           style="display: none"
         ></select>
