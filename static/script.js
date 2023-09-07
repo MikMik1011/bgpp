@@ -345,7 +345,7 @@ const searchByGPS = async () => {
 
 const submitHandlers = {
   name: submitByName,
-  coords: searchByGPS,
+  coords: submitByCoords,
 };
 
 
