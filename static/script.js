@@ -15,8 +15,15 @@ const coloredIcon = (color) => {
   });
 };
 
-const createMarker = (coords, name = undefined, color = "blue") => {
+const createMarker = (
+  coords,
+  name = undefined,
+  color = "blue",
+  popupText = undefined
+) => {
   let marker = new L.marker(coords, { icon: coloredIcon(color) });
+  if (popupText)
+    marker.bindPopup(popupText, { autoClose: false, closeOnClick: false });
   if (name)
     marker.bindTooltip(name, {
       permanent: true,
@@ -113,6 +120,10 @@ const checkDataSaver = () => {
   return $("#dataSaver").is(":checked");
 };
 
+const checkLineSorting = () => {
+  return $("#sort-lines").is(":checked");
+};
+
 const handleTabOut = () => {
   if (!checkDataSaver()) return;
   console.log("tab out");
@@ -127,10 +138,9 @@ const handleTabIn = () => {
 
 const updateArrivals = (response, recenter) => {
   let date = new Date();
-  response.vehicles.reverse();
 
   let name = `${response.name} (${response.id})`;
-  $("#stationName").html(name);
+  $("#stationName").html(`Stanica: ${name}`);
   $("#lastUpdated").html(
     `Poslednji put ažurirano: ${date.toLocaleTimeString()}`
   );
@@ -144,11 +154,21 @@ const updateArrivals = (response, recenter) => {
   if (recenter) map.setView(response.coords, 13, { animation: true });
 
   markers = [];
-  markers.push(createMarker(response.coords, "", "yellow"));
+  markers.push(createMarker(response.coords, "", "yellow", name));
+
+  if (checkLineSorting() && response.vehicles.length > 0) {
+    response.vehicles.sort((a, b) => {
+      return a.lineNumber != b.lineNumber && a.lineName !== b.lineName
+        ? a.lineNumber - b.lineNumber
+        : a.secondsLeft - b.secondsLeft;
+    });
+  } else response.vehicles.reverse();
 
   const tableData = response.vehicles
     .map((value) => {
-      markers.push(createMarker(value.coords, value.lineNumber));
+      markers.push(
+        createMarker(value.coords, value.lineNumber, "blue", value.garageNo)
+      );
       return `<tr>
                     <td>${value.lineNumber}</td>
                     <td>${formatSeconds(value.secondsLeft)}</td>
@@ -218,7 +238,6 @@ const submitByCoords = () => {
   currQuery = { uid: uid };
   spawnInterval(currQuery);
 };
-
 
 const toggleTable = () => {
   const tabela = document.getElementsByTagName("table");
@@ -307,7 +326,11 @@ const cancelInterval = () => {
   $("#lastUpdated").hide();
 };
 
-const searchByCoords = async (searchCoords, maxDistanceElemID, optionsElemID) => {
+const searchByCoords = async (
+  searchCoords,
+  maxDistanceElemID,
+  optionsElemID
+) => {
   $("#updateInProgress").show();
   const stationsMaxDistance = $(maxDistanceElemID).val();
   const closestStations = await findClosestStations(
@@ -346,7 +369,6 @@ const searchByGPS = async () => {
   $("#error").hide();
   const userLocation = await getUserLocation();
   searchByCoords(userLocation, "#stationsMaxDistance-input", "#coords-input");
-
 };
 
 const submitHandlers = {
@@ -354,7 +376,6 @@ const submitHandlers = {
   name: submitByName,
   coords: submitByCoords,
 };
-
 
 $(document).ready(async () => {
   $(window).on("blur", handleTabOut);

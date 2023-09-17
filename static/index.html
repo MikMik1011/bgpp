@@ -120,6 +120,10 @@
 
     <label for="dataSaver">Ušteda podataka:</label>
     <input type="checkbox" id="dataSaver" name="dataSaver" checked /> <br />
+    <br />
+
+    <label for="sort-lines">Sortiranje linija:</label>
+    <input type="checkbox" id="sort-lines" name="sort-lines" checked onchange="if(currQuery) submitHandlers[getSearchMode()]()" /> <br />
 
     <div id="result">
       <p id="stationName"></p>
