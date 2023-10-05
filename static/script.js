@@ -45,9 +45,9 @@ const doAsyncRequest = async (url, type, data, errorHandler) => {
       type: type || "GET",
       data: data || {},
     });
-  } catch {
+  } catch (error) {
     if (errorHandler) {
-      errorHandler();
+      errorHandler(error);
       return;
     }
 
@@ -169,7 +169,7 @@ const updateArrivals = (response, recenter) => {
       markers.push(
         createMarker(value.coords, value.lineNumber, "blue", value.garageNo)
       );
-      if (!value.stationName) value.stationName = "¯\_(ツ)_/¯";
+      if (!value.stationName) value.stationName = "¯\\_(ツ)_/¯";
       return `<tr>
                     <td>${value.lineNumber}</td>
                     <td>${formatSeconds(value.secondsLeft)}</td>
@@ -189,10 +189,12 @@ const fetchArrivals = async (city, query, recenter) => {
   $("#updateInProgress").show();
   $("#error").hide();
 
-  let response = await doAsyncRequest(url, "GET", undefined, () => {
+  let response = await doAsyncRequest(url, "GET", undefined, (error) => {
     console.error("Error sending request:", error);
     $("#updateInProgress").hide();
-    $("#error").html("Greška pri ažuriranju podataka.");
+    $("#error").html(
+      `Greška pri ažuriranju podataka: ${error.responseJSON.message}`
+    );
     $("#error").show();
   });
   updateArrivals(response, recenter);

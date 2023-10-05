@@ -79,6 +79,7 @@ async function populateMap(force = false) {
       console.log(`Populating map finished for ${city}`);
     } catch (err) {
       console.log(`Populating map failed for ${city}`);
+      console.error(err);
     }
   }
 }
@@ -100,13 +101,18 @@ async function getStationInfo(city, query) {
   if (query.uid) var url = baseUrl + query.uid;
   else if (query.id) {
     if (!id_uid_map[city])
-      throw new Error("Invalid ID (or maybe map is not populated yet?)");
+      throw new Error(`Map for ${city} is not populated yet`);
+    let id = id_uid_map[city][query.id.toString()];
+    if (!id) throw new Error("Invalid station ID");
+
     var url = baseUrl + id_uid_map[city][query.id.toString()];
   } else throw new Error("Invalid query");
 
   if (city === "bg") url += "&action=get_announcement_data"; //dirty fix
 
   let resp = await doRequest(url, apikeys[city].key);
+  if (resp[0].success === false)
+    throw new Error(`Endpoint returned error (perhaps invalid ID?)`);
   return transformStationResponse(resp, city);
 }
 
