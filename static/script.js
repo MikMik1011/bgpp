@@ -169,6 +169,7 @@ const updateArrivals = (response, recenter) => {
       markers.push(
         createMarker(value.coords, value.lineNumber, "blue", value.garageNo)
       );
+      if (!value.stationName) value.stationName = "¯\_(ツ)_/¯";
       return `<tr>
                     <td>${value.lineNumber}</td>
                     <td>${formatSeconds(value.secondsLeft)}</td>

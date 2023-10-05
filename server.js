@@ -104,7 +104,7 @@ async function getStationInfo(city, query) {
     var url = baseUrl + id_uid_map[city][query.id.toString()];
   } else throw new Error("Invalid query");
 
-  if (city === "bg") url += "&action=get_announcement_data";
+  if (city === "bg") url += "&action=get_announcement_data"; //dirty fix
 
   let resp = await doRequest(url, apikeys[city].key);
   return transformStationResponse(resp, city);
