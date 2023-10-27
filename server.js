@@ -87,7 +87,6 @@ async function populateMap(force = false) {
 async function doRequest(url, apikey) {
   const headers = {
     "X-Api-Authentication": apikey,
-    "User-Agent": "okhttp/4.10.0", // make detection harder
   };
 
   const response = await axios.get(url, { headers, timeout: 5000 });
