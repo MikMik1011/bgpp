@@ -13,7 +13,8 @@ body {
 }
 
 #lastUpdated,
-#updateInProgress {
+#updateInProgress,
+#motto {
   font-style: italic;
 }
 

@@ -2,7 +2,7 @@
 <meta charset="UTF-8" />
 <html>
   <head>
-    <title>bg++</title>
+    <title>BG++</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="static/index.css" />
 
@@ -47,10 +47,11 @@
     </script>
   </head>
   <body class="body" onload="toggleTable()">
-    <h1>srbus</h1>
-    <h3>Fixamo fix ideje since 2023</h3>
+    <h1>BG++</h1>
+    <h3 id="motto">Fixamo fix ideje since 2023</h3>
 
     <form id="myForm">
+      <label for="city">Grad:</label>
       <select id="city" name="city" onchange="onCityChange()"></select>
       <br />
       <br />
@@ -94,12 +95,16 @@
         </button>
         <br />
         <br />
-        <label for="stationsMaxDistance">Najveća udaljenost (m):</label>
+        <label id="stationsMaxDistance-label">Najveća udaljenost (350m):</label> <br />
         <input
-          type="number"
+          type="range"
           id="stationsMaxDistance-input"
           name="stationsMaxDistance-input"
-          value="300"
+          min="50"
+          max="1000"
+          value="350"
+          step="50"
+          onchange="$('#stationsMaxDistance-label').html(`Najveća udaljenost (${this.value}m):`)"
         />
         <br />
         <br />
@@ -123,7 +128,13 @@
     <br />
 
     <label for="sort-lines">Sortiranje linija:</label>
-    <input type="checkbox" id="sort-lines" name="sort-lines" checked onchange="if(currQuery) submitHandlers[getSearchMode()]()" /> <br />
+    <input
+      type="checkbox"
+      id="sort-lines"
+      name="sort-lines"
+      onchange="if(currQuery) submitHandlers[getSearchMode()]()"
+    />
+    <br />
 
     <div id="result">
       <p id="stationName"></p>

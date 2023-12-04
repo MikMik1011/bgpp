@@ -102,7 +102,7 @@ async function doRequest(url, apikey) {
 }
 
 async function getStationInfo(city, query) {
-  const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?station_uid=`;
+  const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?action=get_announcement_data&station_uid=`;
   if (query.uid) var url = baseUrl + query.uid;
   else if (query.id) {
     if (!id_uid_map[city])
@@ -112,8 +112,6 @@ async function getStationInfo(city, query) {
 
     var url = baseUrl + id_uid_map[city][query.id.toString()];
   } else throw new Error("Invalid query");
-
-  if (city === "bg") url += "&action=get_announcement_data"; //dirty fix
 
   let resp = await doRequest(url, apikeys[city].key);
   if (resp[0].success === false)
