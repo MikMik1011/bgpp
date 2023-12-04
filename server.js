@@ -8,6 +8,11 @@ fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "static"),
   prefix: "/static/",
 });
+fastify.register(require("@fastify/cors"), {
+  origin: "*",
+  methods: "*",
+  allowedHeaders: "*",
+});
 
 const apikeys = require("./apikeys.json");
 
