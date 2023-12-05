@@ -47,9 +47,8 @@ const notify = async () => {
       for (const vehicle of arrivals.vehicles) {
         let currNotify = toNotify[city][station][vehicle.garageNo];
         if (!currNotify || vehicle.stationsBetween > currNotify) continue;
-
         const message = `Vozilo ${vehicle.garageNo} na liniji ${vehicle.lineNumber} je udaljen ${vehicle.stationsBetween} stanica od vas!`;
-        pushNotification(message);
+        Push.create(message);
         notifyBtnTgl(
           station,
           vehicle.garageNo,
@@ -61,23 +60,6 @@ const notify = async () => {
       }
     }
   }
-};
-
-const requestNotificationPermission = async () => {
-  if (!("Notification" in window)) {
-    debugLog("vojko ve ne moze");
-    alert("This browser does not support desktop notification");
-    return false;
-  }
-
-  let permission = await Notification.requestPermission();
-  return permission === "granted";
-};
-
-const pushNotification = (message) => {
-  debugLog("pushing notification", message);
-  if (Notification.permission === "granted")
-    new Notification("BG++", { body: message });
 };
 
 setInterval(notify, 10000);

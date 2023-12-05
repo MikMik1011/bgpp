@@ -19,7 +19,7 @@ const coloredIcon = (color) => {
 
 const debugLog = (...message) => {
   if (DEBUG) console.log(message);
-}
+};
 
 const createMarker = (
   coords,
@@ -143,16 +143,17 @@ const handleTabIn = () => {
 };
 
 const notifyBtnTgl = (station, vehicle, btn) => {
-  if(!requestNotificationPermission()) return;
-  let city = getCity();
-  if (isInNotify(city, station, vehicle)) {
-    removeFromNotify(city, station, vehicle);
-    btn.innerHTML = '<i class="fa-regular fa-bell"></i>';
-    return;
-  }
+  Push.Permission.request(() => {
+    let city = getCity();
+    if (isInNotify(city, station, vehicle)) {
+      removeFromNotify(city, station, vehicle);
+      btn.innerHTML = '<i class="fa-regular fa-bell"></i>';
+      return;
+    }
 
-  addToNotify(city, station, vehicle, 2);
-  btn.innerHTML = '<i class="fa-regular fa-bell-slash"></i>';
+    addToNotify(city, station, vehicle, 2);
+    btn.innerHTML = '<i class="fa-regular fa-bell-slash"></i>';
+  });
 };
 
 const getNotifyButton = (station, vehicle) => {
