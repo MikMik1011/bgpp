@@ -136,6 +136,25 @@ const handleTabIn = () => {
   spawnInterval();
 };
 
+const notifyBtnTgl = (station, vehicle, btn) => {
+  let city = getCity();
+  if (isInNotify(city, station, vehicle)) {
+    removeFromNotify(city, station, vehicle);
+    btn.innerHTML = '<i class="fa-regular fa-bell"></i>';
+    return;
+  }
+
+  addToNotify(city, station, vehicle, 2);
+  btn.innerHTML = '<i class="fa-regular fa-bell-slash"></i>';
+};
+
+const getNotifyButton = (station, vehicle) => {
+  Notification.requestPermission();
+  if (isInNotify(getCity(), station, vehicle)) {
+    return `<button class="btn btn-danger" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell-slash"></i></button>`;
+  }
+  return `<button class="btn btn-success"  onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell"></i></button>`;
+};
 const updateArrivals = (response, recenter) => {
   let date = new Date();
 
@@ -176,6 +195,7 @@ const updateArrivals = (response, recenter) => {
                     <td>${value.stationsBetween}</td>
                     <td>${value.stationName}</td>
                     <td>${value.garageNo}</td>
+                    <td>${getNotifyButton(response.uid, value.garageNo)}</td>
                 </tr>`;
     })
     .join("");

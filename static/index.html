@@ -27,10 +27,15 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script
+      src="https://kit.fontawesome.com/ad389e611c.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
       data-goatcounter="https://goat.hepicgamerz.com/count"
       src="static/count.js"
     ></script>
-
+    <script src="static/notifications.js"></script>
     <script src="static/script.js"></script>
     <script src="static/mapLayers.js"></script>
 
@@ -95,7 +100,8 @@
         </button>
         <br />
         <br />
-        <label id="stationsMaxDistance-label">Najveća udaljenost (350m):</label> <br />
+        <label id="stationsMaxDistance-label">Najveća udaljenost (350m):</label>
+        <br />
         <input
           type="range"
           id="stationsMaxDistance-input"
@@ -151,6 +157,7 @@
             <th scope="col">Stanice</th>
             <th scope="col">Trenutna stanica</th>
             <th scope="col">ID vozila</th>
+            <th scope="col">Obavesti me</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
