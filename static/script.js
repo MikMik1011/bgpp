@@ -3,6 +3,8 @@ let map, layerGroup;
 let currQuery;
 let allStations = {};
 
+const DEBUG = false;
+
 const coloredIcon = (color) => {
   return new L.Icon({
     iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
@@ -14,6 +16,10 @@ const coloredIcon = (color) => {
     shadowSize: [41, 41],
   });
 };
+
+const debugLog = (...message) => {
+  if (DEBUG) console.log(message);
+}
 
 const createMarker = (
   coords,
@@ -58,7 +64,7 @@ const doAsyncRequest = async (url, type, data, errorHandler) => {
 const fetchCityStations = async (city) => {
   let response = await doAsyncRequest(`/api/stations/${city}/all`);
   allStations[city] = response;
-  console.log(allStations);
+  debugLog(allStations);
   fillNameSearch(city);
 };
 
@@ -69,7 +75,7 @@ const moveMapToCityCentre = (city) => {
     nis: [43.3209, 21.8958],
   };
 
-  console.log(`Moving map to ${city} centre`);
+  debugLog(`Moving map to ${city} centre`);
   if (!currInterval) map.setView(cityCentres[city], 13, { animation: true });
 };
 
@@ -78,7 +84,7 @@ const fillNameSearch = (city) => {
   let names = stations.map((station) => {
     return `<option value="${station.uid}">${station.name} (${station.id})</option>`;
   });
-  console.log(names);
+  debugLog(names);
   $("#name-input").html(names);
 };
 
@@ -126,17 +132,18 @@ const checkLineSorting = () => {
 
 const handleTabOut = () => {
   if (!checkDataSaver()) return;
-  console.log("tab out");
+  debugLog("tab out");
   clearInterval(currInterval);
 };
 
 const handleTabIn = () => {
   if (!checkDataSaver()) return;
-  console.log("tab in");
+  debugLog("tab in");
   spawnInterval();
 };
 
 const notifyBtnTgl = (station, vehicle, btn) => {
+  if(!requestNotificationPermission()) return;
   let city = getCity();
   if (isInNotify(city, station, vehicle)) {
     removeFromNotify(city, station, vehicle);
@@ -149,11 +156,11 @@ const notifyBtnTgl = (station, vehicle, btn) => {
 };
 
 const getNotifyButton = (station, vehicle) => {
-  Notification.requestPermission();
-  if (isInNotify(getCity(), station, vehicle)) {
-    return `<button class="btn btn-danger" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell-slash"></i></button>`;
+  let city = getCity();
+  if (isInNotify(city, station, vehicle)) {
+    return `<button class="btn btn-danger" id="notifyBtn-${city}-${station}-${vehicle}" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell-slash"></i></button>`;
   }
-  return `<button class="btn btn-success"  onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell"></i></button>`;
+  return `<button class="btn btn-success"  id="notifyBtn-${city}-${station}-${vehicle}" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell"></i></button>`;
 };
 const updateArrivals = (response, recenter) => {
   let date = new Date();
@@ -169,7 +176,7 @@ const updateArrivals = (response, recenter) => {
   toggleTable();
 
   layerGroup.clearLayers();
-  console.log(response.coords);
+  debugLog(response.coords);
   if (recenter) map.setView(response.coords, 13, { animation: true });
 
   markers = [];

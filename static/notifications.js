@@ -43,27 +43,39 @@ const notify = async () => {
     for (const station of Object.keys(toNotify[city])) {
       let url = `/api/stations/${city}/search?uid=${station}`;
       let arrivals = await doAsyncRequest(url, "GET");
-      arrivals.vehicles.map((vehicle) => {
+
+      for (const vehicle of arrivals.vehicles) {
         let currNotify = toNotify[city][station][vehicle.garageNo];
-        console.log("currNotify", currNotify);
-        console.log("vehicle.stationsBetween", vehicle.stationsBetween);
-        if (currNotify && vehicle.stationsBetween <= currNotify) {
-          const message = `Vozilo ${vehicle.garageNo} na liniji ${vehicle.lineNumber} je ${vehicle.stationsBetween} stanica od vas!`;
-          pushNotification(message);
-          removeFromNotify(city, station, vehicle.garageNo);
-        }
-      });
+        if (!currNotify || vehicle.stationsBetween > currNotify) continue;
+
+        const message = `Vozilo ${vehicle.garageNo} na liniji ${vehicle.lineNumber} je udaljen ${vehicle.stationsBetween} stanica od vas!`;
+        pushNotification(message);
+        notifyBtnTgl(
+          station,
+          vehicle.garageNo,
+          document.getElementById(
+            `notifyBtn-${city}-${station}-${vehicle.garageNo}`
+          )
+        );
+        removeFromNotify(city, station, vehicle.garageNo);
+      }
     }
   }
 };
 
-const pushNotification = (message) => {
+const requestNotificationPermission = async () => {
   if (!("Notification" in window)) {
-    console.log("vojko ve ne moze");
+    debugLog("vojko ve ne moze");
     alert("This browser does not support desktop notification");
-    return;
+    return false;
   }
-  console.log("pushing notification", message);
+
+  let permission = await Notification.requestPermission();
+  return permission === "granted";
+};
+
+const pushNotification = (message) => {
+  debugLog("pushing notification", message);
   if (Notification.permission === "granted")
     new Notification("BG++", { body: message });
 };
