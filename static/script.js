@@ -158,9 +158,9 @@ const notifyBtnTgl = (station, vehicle, btn) => {
 const getNotifyButton = (station, vehicle) => {
   let city = getCity();
   if (isInNotify(city, station, vehicle)) {
-    return `<button class="btn btn-danger" id="notifyBtn-${city}-${station}-${vehicle}" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell-slash"></i></button>`;
+    return `<button class="notifyBtn" id="notifyBtn-${city}-${station}-${vehicle}" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell-slash"></i></button>`;
   }
-  return `<button class="btn btn-success"  id="notifyBtn-${city}-${station}-${vehicle}" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell"></i></button>`;
+  return `<button class="notifyBtn"  id="notifyBtn-${city}-${station}-${vehicle}" onclick="notifyBtnTgl('${station}', '${vehicle}', this)"><i class="fa-regular fa-bell"></i></button>`;
 };
 const updateArrivals = (response, recenter) => {
   let date = new Date();
@@ -195,7 +195,7 @@ const updateArrivals = (response, recenter) => {
       markers.push(
         createMarker(value.coords, value.lineNumber, "blue", value.garageNo)
       );
-      if (!value.stationName) value.stationName = "¯\\_(ツ)_/¯";
+      if (!value.stationName) value.stationName = "🤷";
       return `<tr>
                     <td>${value.lineNumber}</td>
                     <td>${formatSeconds(value.secondsLeft)}</td>

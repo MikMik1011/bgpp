@@ -62,3 +62,10 @@ button:hover {
     width: 35%;
   }
 }
+.notifyBtn {
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  font-size: large;
+  color: white;
+}
