@@ -54,6 +54,12 @@ input[type="checkbox"] {
   transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
+#sort-data-wrapper{
+  text-align: center;
+  margin: auto 20px;
+  display: flex;
+}
+
 select:focus,
 input:focus,
 button:focus {
@@ -78,7 +84,8 @@ button:focus {
 
 #result {
   color: #1abc9c;
-  max-width: 800px;
+  /*max-width: 800px;*/
+  width: fit-content;
   margin: 20px auto;
   background-color: rgba(53, 53, 53, 0.9);
   padding: 20px;
@@ -106,7 +113,7 @@ button:focus {
 
 th, td {
   border: 1px solid #555;
-  padding: 15px;
+  padding: 10px;
   text-align: left;
 }
 
