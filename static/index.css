@@ -1,35 +1,100 @@
 body {
+  font-family: 'Arial', sans-serif;
   text-align: center;
   background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-image: url("Pics/beograd.jpg");
   background-size: cover;
+  margin: 0;
+  padding: 0;
 }
 
-#stationName,
-#error {
+h1, h3 {
+  text-align: center;
+  color: #000000;
+}
+
+form {
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: rgba(53, 53, 53, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+form:hover {
+  background-color: #454545;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+}
+
+label {
+  display: block;
   font-weight: bold;
+  margin-bottom: 8px;
+  color: #1abc9c;
 }
 
-#lastUpdated,
-#updateInProgress,
-#motto {
-  font-style: italic;
+select,
+input[type="text"],
+input[type="number"],
+input[type="submit"],
+button,
+input[type="checkbox"] {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background-color: rgba(45, 45, 45, 0.9);
+  color: #1abc9c;
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
-#map {
+select:focus,
+input:focus,
+button:focus {
+  outline: none;
+  border-color: #1abc9c;
+}
+
+.button-container {
+  text-align: center;
+}
+
+#map{
   width: 30vw;
   height: 30vw;
-}
-#result {
   margin: auto;
-}
-#map {
   border: 2px solid black;
-  margin: auto;
 }
+
+#sortLines, #dataSaver {
+  color: black;
+}
+
+#result {
+  color: #1abc9c;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: rgba(53, 53, 53, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#result:hover {
+  background-color: #454545;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+}
+
 #tabela {
+  width: 100%;
+  margin-top: 20px;
   color: white;
   font-size: large;
   border: 2px solid black;
@@ -38,19 +103,16 @@ body {
   margin: auto;
   display: none;
 }
-#submit,
-button {
-  cursor: pointer;
-  border: 2px solid black;
-  width: 15%;
-  padding: 1vh;
-  border-radius: 35px;
-  background: transparent;
-  transition: all 0.2s ease-in-out;
+
+th, td {
+  border: 1px solid #555;
+  padding: 15px;
+  text-align: left;
 }
-#submit:hover,
-button:hover {
-  transform: scale(1.1);
+
+thead {
+  background-color: #1abc9c;
+  color: #fff;
 }
 
 @media screen and (max-width: 600px) {
