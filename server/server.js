@@ -123,11 +123,13 @@ function getStationUid(city, query) {
 async function getStationInfoV1(city, uid) {
   const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?action=get_announcement_data&station_uid=`;
   let url = baseUrl + uid;
-
   let resp = await getRequest(url, apikeys[city].key);
-  console.log(resp);
+
+  if (resp === "")
+    throw new Error(`Endpoint returned nothing (perhaps they changed API?)`);
   if (resp[0].success === false)
     throw new Error(`Endpoint returned error (perhaps invalid ID?)`);
+
   return transformStationResponse(resp, city);
 }
 
@@ -138,17 +140,17 @@ async function getStationInfoV2(city, uid) {
     station_uid: uid,
     session_id: "bgpp",
   };
-  let jsonified = JSON.stringify(json);
-  let base = crypto.encrypt(jsonified);
+  let base = crypto.encrypt(JSON.stringify(json), apikeys[city].v2_key, apikeys[city].v2_iv);
   let payload = `action=data_bulletin&base=${base}`;
 
   let resp = await postRequest(url, apikeys[city].key, payload);
   if (resp === "")
     throw new Error(`Endpoint returned nothing (perhaps they changed API?)`);
 
-  let decoded = JSON.parse(crypto.decrypt(resp));
+  let decoded = JSON.parse(crypto.decrypt(resp, apikeys[city].v2_key, apikeys[city].v2_iv));
   if (decoded["success"] == false)
     throw new Error(`Endpoint returned error (perhaps invalid ID?)`);
+  
   return transformStationResponse(decoded["data"], city);
 }
 
