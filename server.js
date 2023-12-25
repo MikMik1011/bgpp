@@ -103,7 +103,7 @@ async function doRequest(url, apikey) {
 
 async function getStationInfo(city, query) {
   const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?action=get_announcement_data&station_uid=`;
-  if(city == "bg") throw new Error("BusLogic drastically changed and obfuscated their API. I will try to decode it, but it will take some time.");
+  if(city == "bg") throw new Error("BusLogic has drastically changed and obfuscated their API. I will try to decode it, but it will take some time.");
   if (query.uid) var url = baseUrl + query.uid;
   else if (query.id) {
     if (!id_uid_map[city])
