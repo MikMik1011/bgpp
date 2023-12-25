@@ -1,8 +1,5 @@
 const CryptoJS = require("crypto-js");
 
-const KEY = "3+Lhz8XaOli6bHIoYPGuq9Y8SZxEjX6eN7AFPZuLCLs=";
-const IV = "IvUScqUudyxBTBU9ZCyjow==";
-
 const decrypt = (inputString, b64key, b64iv) => {
   const urlDecoded = decodeURIComponent(inputString);
 

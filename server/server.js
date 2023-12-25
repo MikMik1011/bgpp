@@ -133,13 +133,26 @@ async function getStationInfoV1(city, uid) {
   return transformStationResponse(resp, city);
 }
 
+function generateSessionId(length) {
+  let result = 'A';
+  const characters = '0123456789';
+
+  for (let i = 0; i < length - 1; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
+}
+
 async function getStationInfoV2(city, uid) {
   const url = `${apikeys[city].url}/publicapi/v2/api.php`;
 
   let json = {
     station_uid: uid,
-    session_id: "bgpp",
+    session_id: generateSessionId(14),
   };
+  console.log(json);
   let base = crypto.encrypt(JSON.stringify(json), apikeys[city].v2_key, apikeys[city].v2_iv);
   let payload = `action=data_bulletin&base=${base}`;
 
@@ -150,7 +163,7 @@ async function getStationInfoV2(city, uid) {
   let decoded = JSON.parse(crypto.decrypt(resp, apikeys[city].v2_key, apikeys[city].v2_iv));
   if (decoded["success"] == false)
     throw new Error(`Endpoint returned error (perhaps invalid ID?)`);
-  
+
   return transformStationResponse(decoded["data"], city);
 }
 
