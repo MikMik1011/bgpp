@@ -4,8 +4,10 @@ const fastify = require("fastify")({
 const axios = require("axios");
 const path = require("path");
 
+const crypto = require("./crypto");
+
 fastify.register(require("@fastify/static"), {
-  root: path.join(__dirname, "static"),
+  root: path.join(__dirname, "../static"),
   prefix: "/static/",
 });
 fastify.register(require("@fastify/cors"), {
@@ -23,14 +25,14 @@ const getKeyByValue = (object, value) => {
   return Object.keys(object).find((key) => object[key] === value);
 };
 function transformAllStationsResponse(response) {
-  let newResp = new Array();
+  let newResp = {};
   response.stations.map((value) => {
     let station = new Object();
     station.name = value.name;
     station.uid = value.id;
     station.id = value.station_id;
     station.coords = [value.coordinates.latitude, value.coordinates.longitude];
-    newResp.push(station);
+    newResp[station.uid] = station;
   });
   return newResp;
 }
@@ -42,15 +44,10 @@ function transformStationResponse(response, city) {
   newResp.uid = response[0].station_uid;
   newResp.id =
     getKeyByValue(id_uid_map[city], response[0].station_uid.toString()) || "0";
-  newResp.coords = [];
+  newResp.coords = allStations[city][newResp.uid].coords;
   newResp.vehicles = new Array();
 
-  if (response[0].just_coordinates == "1") {
-    newResp.coords = [response[0].gpsx, response[0].gpsy];
-    return newResp;
-  }
-
-  newResp.coords = [response[0].stations_gpsx, response[0].stations_gpsy];
+  if (response[0].just_coordinates == "1") return newResp;
 
   response.map((value) => {
     let vehicle = new Object();
@@ -89,7 +86,7 @@ async function populateMap(force = false) {
   }
 }
 
-async function doRequest(url, apikey) {
+async function getRequest(url, apikey) {
   const headers = {
     "X-Api-Authentication": apikey,
   };
@@ -101,32 +98,74 @@ async function doRequest(url, apikey) {
   return response.data;
 }
 
-async function getStationInfo(city, query) {
-  const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?action=get_announcement_data&station_uid=`;
-  if(city == "bg") throw new Error("BusLogic has drastically changed and obfuscated their API. I will try to decode it, but it will take some time.");
-  if (query.uid) var url = baseUrl + query.uid;
-  else if (query.id) {
+async function postRequest(url, apikey, payload) {
+  const headers = {
+    "X-Api-Authentication": apikey,
+  };
+
+  const response = await axios.post(url, payload, { headers, timeout: 5000 });
+  if (response.status != 200)
+    throw new Error(`Request failed with status code ${response.status}`);
+
+  return response.data;
+}
+
+function getStationUid(city, query) {
+  if (query.uid) return query.uid;
+  if (query.id) {
     if (!id_uid_map[city])
       throw new Error(`Map for ${city} is not populated yet`);
-    let id = id_uid_map[city][query.id.toString()];
-    if (!id) throw new Error("Invalid station ID");
+    return id_uid_map[city][query.id.toString()];
+  }
+  throw new Error("Invalid query");
+}
 
-    var url = baseUrl + id_uid_map[city][query.id.toString()];
-  } else throw new Error("Invalid query");
+async function getStationInfoV1(city, uid) {
+  const baseUrl = `${apikeys[city].url}/publicapi/v1/announcement/announcement.php?action=get_announcement_data&station_uid=`;
+  let url = baseUrl + uid;
 
-  let resp = await doRequest(url, apikeys[city].key);
+  let resp = await getRequest(url, apikeys[city].key);
+  console.log(resp);
   if (resp[0].success === false)
     throw new Error(`Endpoint returned error (perhaps invalid ID?)`);
   return transformStationResponse(resp, city);
 }
 
+async function getStationInfoV2(city, uid) {
+  const url = `${apikeys[city].url}/publicapi/v2/api.php`;
+
+  let json = {
+    station_uid: uid,
+    session_id: "bgpp",
+  };
+  let jsonified = JSON.stringify(json);
+  let base = crypto.encrypt(jsonified);
+  let payload = `action=data_bulletin&base=${base}`;
+
+  let resp = await postRequest(url, apikeys[city].key, payload);
+  if (resp === "")
+    throw new Error(`Endpoint returned nothing (perhaps they changed API?)`);
+
+  let decoded = JSON.parse(crypto.decrypt(resp));
+  if (decoded["success"] == false)
+    throw new Error(`Endpoint returned error (perhaps invalid ID?)`);
+  return transformStationResponse(decoded["data"], city);
+}
+
+async function getStationInfo(city, query) {
+  uid = getStationUid(city, query);
+  if (apikeys[city].api === "v1") return await getStationInfoV1(city, uid);
+  else if (apikeys[city].api === "v2") return await getStationInfoV2(city, uid);
+  else throw new Error("Invalid API version");
+}
+
 async function getAllStations(city) {
   const url = `${apikeys[city].url}/publicapi/v1/networkextended.php?action=get_cities_extended`;
   if (!allStations[city]) {
-    const response = await doRequest(url, apikeys[city].key);
+    const response = await getRequest(url, apikeys[city].key);
     allStations[city] = transformAllStationsResponse(response);
   }
-  return allStations[city];
+  return Object.values(allStations[city]);
 }
 
 async function getAvaliableCities() {

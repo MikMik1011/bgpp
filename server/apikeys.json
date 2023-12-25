@@ -2,16 +2,19 @@
   "bg": {
     "name": "Beograd",
     "url": "https://gps-bgnaplata.ticketing.rs",
-    "key": "1688dc355af72ef09287"
+    "key": "1688dc355af72ef09287",
+    "api": "v2"
   },
   "ns": {
     "name": "Novi Sad",
     "url": "https://online.nsmart.rs",
-    "key": "4670f468049bbee2260"
+    "key": "4670f468049bbee2260",
+    "api": "v1"
   },
   "nis": {
     "name": "Niš",
     "url": "https://online.jgpnis.rs",
-    "key": "cddfd29e495b4851965d"
+    "key": "cddfd29e495b4851965d",
+    "api": "v1"
   }
 }

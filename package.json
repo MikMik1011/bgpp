@@ -2,10 +2,10 @@
   "name": "bgpp",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
-    "run": "node server.js",
-    "dev": "npx nodemon server.js"
+    "run": "node server/server.js",
+    "dev": "npx nodemon server/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +13,9 @@
     "@fastify/cors": "^8.4.2",
     "@fastify/static": "^6.10.2",
     "axios": "^1.4.0",
-    "fastify": "^4.24.3"
+    "crypto-js": "^4.2.0",
+    "fastify": "^4.24.3",
+    "querystring": "^0.2.1"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.3.3",
