@@ -150,9 +150,8 @@ async function getStationInfoV2(city, uid) {
 
   let json = {
     station_uid: uid,
-    session_id: generateSessionId(14),
+    session_id: `A${Date.now()}`,
   };
-  console.log(json);
   let base = crypto.encrypt(JSON.stringify(json), apikeys[city].v2_key, apikeys[city].v2_iv);
   let payload = `action=data_bulletin&base=${base}`;
 
