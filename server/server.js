@@ -78,9 +78,9 @@ async function populateMap(force = false) {
       for (const station of stations) {
         id_uid_map[city][station.id.toString()] = station.uid.toString();
       }
-      console.log(`Populating map finished for ${city}`);
+      console.info(`Populating map finished for ${city}`);
     } catch (err) {
-      console.log(`Populating map failed for ${city}`);
+      console.error(`Populating map failed for ${city}`);
       console.error(err);
     }
   }
@@ -101,8 +101,8 @@ async function getRequest(url, apikey) {
 async function postRequest(url, apikey, payload) {
   const headers = {
     "X-Api-Authentication": apikey,
+    'User-Agent': 'okhttp/4.10.0'
   };
-
   const response = await axios.post(url, payload, { headers, timeout: 5000 });
   if (response.status != 200)
     throw new Error(`Request failed with status code ${response.status}`);
