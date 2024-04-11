@@ -1,15 +1,18 @@
 <script>
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Checkbox } from '$lib/components/ui/checkbox';
+	// shadcn base
 	import Label from '$lib/components/ui/label/label.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { Separator } from '$lib/components/ui/separator';
+	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Separator } from '$lib/components/ui/separator';
 
+	// custom components
 	import FormID from '$lib/components/forms/formid/formid.svelte';
 	import FormName from '$lib/components/forms/formname/formname.svelte';
 	import FormLocation from '$lib/components/forms/formlocation/formlocation.svelte';
+	import ThemeToggle from '$lib/components/ui/themetoggle/themetoggle.svelte';
 
 	const gradovi = [
 		{ value: 'bg', label: 'Beograd' },
@@ -39,7 +42,8 @@
 
 <Dialog.Root>
 	<div class="h-[90vh] flex justify-center items-center">
-		<Card.Root class="p-5">
+		<Card.Root class="relative p-5">
+			<div class="absolute top-5 right-5"><ThemeToggle /></div>
 			<Card.Header>
 				<Card.Title>BG++</Card.Title>
 				<Card.Description>fixamo fix ideje since 2023</Card.Description>
@@ -104,26 +108,26 @@
 				<div>Ažuriranje u toku...</div>
 			</Dialog.Description>
 		</Dialog.Header>
-		<div class="flex gap-6">
-			<div id="table">
+		<div class="flex flex-wrap">
+			<div class="w-full flex justify-center" id="table">
 				<Table.Root>
 					<Table.Header>
 						<Table.Row>
 							<Table.Head>Linija</Table.Head>
-							<Table.Head>ETA</Table.Head>
-							<Table.Head>Preostale stanice</Table.Head>
-							<Table.Head>Trenutna stanica</Table.Head>
-							<Table.Head>ID Vozila</Table.Head>
+							<Table.Head class="text-right">ETA</Table.Head>
+							<Table.Head class="text-right">Preostale stanice</Table.Head>
+							<!--<Table.Head>Trenutna stanica</Table.Head>-->
+							<Table.Head class="text-right">ID Vozila</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#each linije as linija}
 							<Table.Row>
 								<Table.Cell class="font-medium">{linija.linija}</Table.Cell>
-								<Table.Cell>{linija.eta}</Table.Cell>
-								<Table.Cell>{linija.stanice}</Table.Cell>
-								<Table.Cell class="text-center">{linija.trenutna}</Table.Cell>
-								<Table.Cell>{linija.id}</Table.Cell>
+								<Table.Cell class="text-right">{linija.eta}</Table.Cell>
+								<Table.Cell class="text-right">{linija.stanice}</Table.Cell>
+								<!--<Table.Cell>{linija.trenutna}</Table.Cell>-->
+								<Table.Cell class="text-right">{linija.id}</Table.Cell>
 							</Table.Row>
 						{/each}
 					</Table.Body>

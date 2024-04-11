@@ -41,6 +41,9 @@ devDependencies:
   formsnap:
     specifier: ^1.0.0
     version: 1.0.0(svelte@4.2.13)(sveltekit-superforms@2.12.4)
+  mode-watcher:
+    specifier: ^0.3.0
+    version: 0.3.0(svelte@4.2.13)
   postcss:
     specifier: ^8.4.38
     version: 8.4.38
@@ -1778,6 +1781,14 @@ packages:
   /minipass@7.0.4:
     resolution: {integrity: sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==}
     engines: {node: '>=16 || 14 >=14.17'}
+    dev: true
+
+  /mode-watcher@0.3.0(svelte@4.2.13):
+    resolution: {integrity: sha512-k8jjuTx94HaaRKWO6JDf8wL761hFatrTIHJKl+E+3JWcnv+GnMBH062zcLsy0lbCI3n7RZxxHaWi66auFnUO4g==}
+    peerDependencies:
+      svelte: ^4.0.0
+    dependencies:
+      svelte: 4.2.13
     dev: true
 
   /mri@1.2.0:
