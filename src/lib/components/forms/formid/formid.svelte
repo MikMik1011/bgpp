@@ -5,9 +5,9 @@
 </script>
 
 <div>
-	<Input type="number" min="0" placeholder="Broj stanice" class="max-w-xs"></Input>
+	<Input type="number" min="0" placeholder="Broj stanice" class="max-w-xs mb-2"></Input>
 
-	<Dialog.Trigger class="w-full mt-2">
+	<Dialog.Trigger class="w-full">
 		<Button class="w-full">Kada će mi bus?</Button>
 	</Dialog.Trigger>
 </div>

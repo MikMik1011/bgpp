@@ -37,10 +37,12 @@
 		<Label>Najveća udaljenost ({value[0]}m)</Label>
 		<Slider bind:value min={50} max={1000} step={50} class="mt-2 mb-4" />
 	</div>
-	<Combobox bind:selectables />
+	<div class="mb-2">
+		<Combobox bind:selectables />
+	</div>
 	<div class="w-full">
 		<Dialog.Trigger class="w-full">
-			<Button class="w-full mt-2">Kada će mi bus?</Button>
+			<Button class="w-full">Kada će mi bus?</Button>
 		</Dialog.Trigger>
 	</div>
 </div>

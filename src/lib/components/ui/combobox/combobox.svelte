@@ -38,7 +38,7 @@
 			<CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
 		</Button>
 	</Popover.Trigger>
-	<Popover.Content class="w-[200px] p-0">
+	<Popover.Content class="p-0">
 		<Command.Root>
 			<Command.Input placeholder="Pretraži stanice..." class="h-9" />
 			<Command.Empty>Stanica nije pronađena.</Command.Empty>

@@ -1,4 +1,7 @@
 <script>
+	// loader
+	import Loader from '$lib/loader/loader.svg';
+
 	// shadcn base
 	import Label from '$lib/components/ui/label/label.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
@@ -21,6 +24,7 @@
 	];
 
 	let selected;
+	let loader = true;
 
 	const linije = [
 		{
@@ -101,11 +105,13 @@
 		</Card.Root>
 	</div>
 	<Dialog.Content class="sm:max-w-[425px]">
-		<Dialog.Header>
+		<Dialog.Header class="relative">
 			<Dialog.Title>Stanica: Futoška Bla Bla</Dialog.Title>
 			<Dialog.Description>
-				<div>Poslednji put ažurirana: 12.4.2023. 00:00:00</div>
-				<div>Ažuriranje u toku...</div>
+				Poslednji put ažurirana: 12.4.2023. 00:00:00
+				{#if loader}
+					<img class="inline-block" src={Loader} alt="Ažuriranje podataka u toku..." />
+				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="flex flex-wrap">
