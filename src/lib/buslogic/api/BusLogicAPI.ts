@@ -1,5 +1,5 @@
 import type { IParser } from "../parser/IParser";
-import type { AllStationsResponse, Line, Station } from "../types";
+import type { AllStationsResponse, BusLogicAPIParams, Line, Station } from "../types";
 
 export abstract class BusLogicAPI {
 
@@ -11,7 +11,7 @@ export abstract class BusLogicAPI {
     abstract getAllStations(): Promise<AllStationsResponse>;
     abstract getStationArrivals(station: Station): Promise<Line[]>;
 
-    constructor (city: string, baseUrl: string, apiKey: string) {
+    constructor ({city, baseUrl, apiKey} : BusLogicAPIParams) {
         this._city = city;
         this._baseUrl = baseUrl;
         this._apiKey = apiKey;

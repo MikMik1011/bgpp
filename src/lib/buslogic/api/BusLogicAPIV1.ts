@@ -1,7 +1,7 @@
 import { BusLogicAPI } from './BusLogicAPI';
 import type { IParser } from '../parser/IParser';
 import { ParserV1 } from '../parser/ParserV1';
-import type { AllStationsResponse, Station, Line } from '../types';
+import type { AllStationsResponse, Station, Line, BusLogicAPIParams } from '../types';
 
 const endpoints = {
 	allStations: '/publicapi/v1/networkextended.php?action=get_cities_extended',
@@ -43,8 +43,8 @@ export class BusLogicAPIV1 extends BusLogicAPI {
 		return this.parser.parseStationArrivals(json);
 	}
 
-	constructor(city: string, baseUrl: string, apiKey: string) {
-		super(city, baseUrl, apiKey);
+	constructor({city, baseUrl, apiKey} : BusLogicAPIParams) {
+		super({city, baseUrl, apiKey});
 		this.urls = {
 			allStations: this._baseUrl + endpoints.allStations,
 			stationInfo: this._baseUrl + endpoints.stationInfo

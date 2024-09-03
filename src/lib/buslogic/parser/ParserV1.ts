@@ -9,7 +9,7 @@ export class ParserV1 implements IParser {
     parseAllStations(response: any): AllStationsResponse {
         return response.stations.reduce(
 			(acc: AllStationsResponse, value: any) => {
-				let station: Station = {
+				const station: Station = {
 					name: value.name,
 					uid: value.id,
 					id: value.station_id,
@@ -22,7 +22,7 @@ export class ParserV1 implements IParser {
 		);
     }
     parseStationArrivals(response: any): Line[] {
-        if (response[0].just_coordinates == "1") return [];
+        if (response.length == 0 || response[0].just_coordinates == "1") return [];
         const linesMap = response.toReversed().reduce((map: Map<string, Line>, value: any) => {
             const arrival: Arrival = {
                 secondsLeft: value.seconds_left,

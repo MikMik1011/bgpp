@@ -26,3 +26,14 @@ export interface Coords {
     lat: number;
     lon: number;
 }
+
+export interface BusLogicAPIParams {
+    city: string;
+    baseUrl: string;
+    apiKey: string;
+}
+
+export interface BusLogicAPIV2Params extends BusLogicAPIParams {
+    encKey: string;
+    encIV: string;
+}
