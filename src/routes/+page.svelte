@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	// shadcn base
 	import Label from '$lib/components/ui/label/label.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
@@ -13,6 +13,7 @@
 	import FormName from '$lib/components/forms/formname/formname.svelte';
 	import FormLocation from '$lib/components/forms/formlocation/formlocation.svelte';
 	import ThemeToggle from '$lib/components/ui/themetoggle/themetoggle.svelte';
+	import type { AllStationsResponse, Station } from '$lib/buslogic/types';
 
 	const gradovi = [
 		{ value: 'bg', label: 'Beograd' },
@@ -20,7 +21,8 @@
 		{ value: 'ni', label: 'Niš' }
 	];
 
-	let selected;
+	let selected : any;
+	let stations : AllStationsResponse;
 
 	const linije = [
 		{
@@ -38,6 +40,16 @@
 			id: 'P30234'
 		}
 	];
+
+	const getStations = async (event : any) => {
+		const res = await fetch(`./api/${event.value}/stations`);
+		stations = await res.json();
+		console.log(stations);
+	};
+
+	export let data : any;
+	console.log(data)
+
 </script>
 
 <Dialog.Root>
@@ -50,14 +62,14 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="mb-2">
-					<Select.Root portal={null}>
+					<Select.Root portal={null} onSelectedChange={getStations}>
 						<Select.Trigger class="max-w-xs">
 							<Select.Value placeholder="Izaberi grad..." />
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Group>
-								{#each gradovi as grad}
-									<Select.Item value={grad.value} label={grad.label}>{grad.label}</Select.Item>
+								{#each data.cities as grad}
+									<Select.Item value={grad.key} label={grad.name}>{grad.name}</Select.Item>
 								{/each}
 							</Select.Group>
 						</Select.Content>
