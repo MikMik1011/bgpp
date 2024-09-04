@@ -16,7 +16,7 @@ export class ParserV1 implements IParser {
 					coords: { lat: value.coordinates.latitude, lon: value.coordinates.longitude }
 				};
 
-				return { ...acc, [station.uid]: station };
+				return { ...acc, [station.id.toUpperCase()]: station };
 			},
 			{}
 		);
