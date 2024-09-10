@@ -1,7 +1,7 @@
 import { LocalTimedCache } from "./LocalTimedCache";
 import type { ITimedCache } from "./ITimedCache";
 
-export interface CachedFunctionData<T> {
+type CachedFunctionData<T> = {
     func: (...args: any[]) => Promise<T>;
     args: any[];
 }

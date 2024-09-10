@@ -11,7 +11,7 @@ const endpoints = {
 
 const userAgent = 'okhttp/4.10.0';
 
-interface ArrivalsPayload {
+type ArrivalsPayload = {
 	station_uid: string;
 	session_id: string;
 }

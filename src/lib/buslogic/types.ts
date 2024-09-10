@@ -1,39 +1,39 @@
-export interface AllStationsResponse {
+export type AllStationsResponse = {
     [stationId: string]: Station;
 }
-export interface Station {
+export type Station =  {
     name: string;
     uid: string;
     id: string;
     coords: Coords;
 }
 
-export interface Line {
+export type Line = {
     lineNumber: string;
     lineName: string;
     arrivals: Arrival[];
 }
 
-export interface Arrival {
+export type Arrival = {
     secondsLeft: number;
     stationsBetween: number;
-    stationName: string;
+    stationName?: string;
     garageNo: string;
     coords: Coords;
-}
+};
 
-export interface Coords {
+export type Coords = {
     lat: number;
     lon: number;
 }
 
-export interface BusLogicAPIParams {
+export type BusLogicAPIParams = {
     city: string;
     baseUrl: string;
     apiKey: string;
 }
 
-export interface BusLogicAPIV2Params extends BusLogicAPIParams {
+export type BusLogicAPIV2Params = BusLogicAPIParams & {
     encKey: string;
     encIV: string;
 }

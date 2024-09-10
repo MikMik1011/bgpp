@@ -1,6 +1,6 @@
 import type { ITimedCache } from "./ITimedCache";
 
-interface CacheEntry<T> {
+type CacheEntry<T> = {
 	value: T;
 	expires: number;
 }
