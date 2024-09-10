@@ -1,6 +1,9 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { BusLogicAPIV1 } from '$lib/buslogic/api/BusLogicAPIV1';
 import { BusLogicAPIV2 } from '$lib/buslogic/api/BusLogicAPIV2';
+import { CachedFunctionRunner } from '$lib/buslogic/timed-cache/CachedFunctionRunner';
+import { LocalTimedCache } from '$lib/buslogic/timed-cache/LocalTimedCache';
+import type { AllStationsResponse } from '$lib/buslogic/types';
 
 const instances: { [key: string]: BusLogicAPI } = {
 	bg: new BusLogicAPIV2({
@@ -15,12 +18,16 @@ const instances: { [key: string]: BusLogicAPI } = {
 		baseUrl: 'https://online.nsmart.rs',
 		apiKey: '4670f468049bbee2260'
 	}),
-	ni : new BusLogicAPIV1({
+	ni: new BusLogicAPIV1({
 		city: 'Niš',
 		baseUrl: 'https://online.jgpnis.rs',
 		apiKey: 'cddfd29e495b4851965d'
 	})
 };
+const day = 1000 * 60 * 60 * 24;
+export const cacheRunner = new CachedFunctionRunner<AllStationsResponse>(
+	new LocalTimedCache<AllStationsResponse>(day)
+);
 
 export const getInstance = (city: string) => {
 	if (instances[city]) {
