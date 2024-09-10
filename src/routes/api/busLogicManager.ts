@@ -1,8 +1,8 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { BusLogicAPIV1 } from '$lib/buslogic/api/BusLogicAPIV1';
 import { BusLogicAPIV2 } from '$lib/buslogic/api/BusLogicAPIV2';
-import { CachedFunctionRunner } from '$lib/buslogic/timed-cache/CachedFunctionRunner';
-import { LocalTimedCache } from '$lib/buslogic/timed-cache/LocalTimedCache';
+import { CachedFunctionRunner } from '$lib/timed-cache/CachedFunctionRunner';
+import { LocalTimedCache } from '$lib/timed-cache/LocalTimedCache';
 import type { AllStationsResponse } from '$lib/buslogic/types';
 
 const instances: { [key: string]: BusLogicAPI } = {
