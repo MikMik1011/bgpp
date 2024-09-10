@@ -10,7 +10,7 @@ export class LocalTimedCache<T> implements ITimedCache<T> {
 	private readonly ttl: number;
 
 	constructor(ttl: number) {
-		this.ttl = ttl;
+		this.ttl = ttl * 1000;
 	}
 
 	public async get(key: string): Promise<T> {

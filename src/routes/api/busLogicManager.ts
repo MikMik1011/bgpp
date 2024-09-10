@@ -24,7 +24,7 @@ const instances: { [key: string]: BusLogicAPI } = {
 		apiKey: 'cddfd29e495b4851965d'
 	})
 };
-const day = 1000 * 60 * 60 * 24;
+const day = 60 * 60 * 24;
 export const cacheRunner = new CachedFunctionRunner<AllStationsResponse>(
 	new LocalTimedCache<AllStationsResponse>(day)
 );
