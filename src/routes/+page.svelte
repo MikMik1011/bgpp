@@ -14,6 +14,7 @@
 	import FormLocation from '$lib/components/forms/formlocation/formlocation.svelte';
 	import ThemeToggle from '$lib/components/ui/themetoggle/themetoggle.svelte';
 	import type { AllStationsResponse, Station } from '$lib/buslogic/types';
+	import { city } from '../stores';
 
 	const gradovi = [
 		{ value: 'bg', label: 'Beograd' },
@@ -21,8 +22,8 @@
 		{ value: 'ni', label: 'Niš' }
 	];
 
-	let selected : any;
 	let stations : AllStationsResponse;
+	let searchType : any;
 
 	const linije = [
 		{
@@ -62,7 +63,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="mb-2">
-					<Select.Root portal={null} onSelectedChange={getStations}>
+					<Select.Root portal={null} bind:selected={$city}>
 						<Select.Trigger class="max-w-xs">
 							<Select.Value placeholder="Izaberi grad..." />
 						</Select.Trigger>
@@ -78,7 +79,7 @@
 				</div>
 				<Separator />
 				<div class="my-2">
-					<Select.Root portal={null} bind:selected>
+					<Select.Root portal={null} bind:selected={searchType}>
 						<Select.Trigger class="max-w-xs">
 							<Select.Value placeholder="Tip pretrage..." />
 						</Select.Trigger>
@@ -92,11 +93,11 @@
 						<Select.Input name="tipPretrage" />
 					</Select.Root>
 				</div>
-				{#if selected != undefined && selected.value === 'ids'}
+				{#if searchType != undefined && searchType.value === 'ids'}
 					<FormID />
-				{:else if selected != undefined && selected.value === 'ime'}
+				{:else if searchType != undefined && searchType.value === 'ime'}
 					<FormName />
-				{:else if selected != undefined && selected.value === 'lok'}
+				{:else if searchType != undefined && searchType.value === 'lok'}
 					<FormLocation />
 				{/if}
 			</Card.Content>

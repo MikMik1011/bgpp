@@ -10,7 +10,7 @@
 	export let selectables;
 
 	let open = false;
-	let value = '';
+	export let value = '';
 
 	$: selectedValue = selectables.find((f) => f.value === value)?.label ?? 'Odabir stanice...';
 
