@@ -12,11 +12,14 @@
 	let open = false;
 	export let value = '';
 
-	$: selectedValue = selectables.find((f) => f.value === value)?.label ?? 'Odabir stanice...';
+	$: selectedValue = selectables.find((/** @type {{ value: string; }} */ f) => f.value === value)?.label ?? 'Odabir stanice...';
 
 	// We want to refocus the trigger button when the user selects
 	// an item from the list so users can continue navigating the
 	// rest of the form with the keyboard.
+	/**
+	 * @param {string} triggerId
+	 */
 	function closeAndFocusTrigger(triggerId) {
 		open = false;
 		tick().then(() => {
@@ -46,7 +49,7 @@
 				{#each selectables as selectable}
 					<Command.Item
 						value={selectable.value}
-						onSelect={(currentValue) => {
+						onSelect={(/** @type {string} */ currentValue) => {
 							value = currentValue;
 							closeAndFocusTrigger(ids.trigger);
 						}}
