@@ -5,6 +5,7 @@ const axios = require("axios");
 const path = require("path");
 
 const crypto = require("./crypto");
+const nodeCrypto = require("crypto");
 
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "../static"),
@@ -20,6 +21,7 @@ const apikeys = require("./apikeys.json");
 
 let id_uid_map = {};
 let allStations = {};
+let stationHashes = {};
 
 const getKeyByValue = (object, value) => {
   return Object.keys(object).find((key) => object[key] === value);
@@ -35,6 +37,9 @@ function transformAllStationsResponse(response) {
     newResp[station.uid] = station;
   });
   return newResp;
+}
+function hashAllStations(stations) {
+    return nodeCrypto.createHash('sha256').update(JSON.stringify(stations)).digest('hex');
 }
 
 function transformStationResponse(response, city) {
@@ -134,18 +139,6 @@ async function getStationInfoV1(city, uid) {
   return transformStationResponse(resp, city);
 }
 
-function generateSessionId(length) {
-  let result = 'A';
-  const characters = '0123456789';
-
-  for (let i = 0; i < length - 1; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    result += characters.charAt(randomIndex);
-  }
-
-  return result;
-}
-
 async function getStationInfoV2(city, uid) {
   const url = `${apikeys[city].url}/publicapi/v2/api.php`;
 
@@ -179,6 +172,7 @@ async function getAllStations(city) {
   if (!allStations[city]) {
     const response = await getRequest(url, apikeys[city].key);
     allStations[city] = transformAllStationsResponse(response);
+    stationHashes[city] = hashAllStations(allStations[city]);
   }
   return Object.values(allStations[city]);
 }
@@ -200,6 +194,7 @@ fastify.get("/api/stations/:city/search", async (request, reply) => {
     reply.send(err);
   }
 });
+
 fastify.get("/api/stations/:city/all", async (request, reply) => {
   const city = request.params.city;
   try {
@@ -210,6 +205,18 @@ fastify.get("/api/stations/:city/all", async (request, reply) => {
     reply.send(err);
   }
 });
+
+fastify.get("/api/stations/:city/hash", async (request, reply) => {
+  const city = request.params.city;
+  try {
+    const response = { hash: stationHashes[city] || "0"};
+    reply.send(response);
+  } catch (err) {
+    console.error(err);
+    reply.send(err);
+  }
+});
+
 fastify.get("/api/cities", async (request, reply) => {
   try {
     const response = await getAvaliableCities();
