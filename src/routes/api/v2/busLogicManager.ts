@@ -40,7 +40,7 @@ export const getInstance = (city: string) => {
 	if (instances[city]) {
 		return instances[city];
 	}
-	throw new Error(`Unknown city: ${city}`);
+	return null;
 };
 
 export const getCities = () => {

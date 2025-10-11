@@ -10,7 +10,7 @@ export const GET = async ({ params }: RequestEvent) => {
 		return error(400, 'Station ID is required');
 	}
 	const city = params.city;
-	const api : BusLogicAPI = getInstance(city);
+	const api: BusLogicAPI | null = getInstance(city);
 	if(!api) {
 		return error(400, `City ${city} is not supported`);
 	}
