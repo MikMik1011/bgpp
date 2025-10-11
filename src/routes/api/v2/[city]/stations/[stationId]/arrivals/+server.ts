@@ -1,10 +1,13 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
-import { cacheRunner, getInstance } from '../../../busLogicManager';
+import { cacheRunner, getInstance } from '../../../../busLogicManager';
 
 export const GET = async ({ params }: RequestEvent) => {
 	if(!params.city) {
 		return error(400, 'City is required');
+	}
+	if(!params.stationId) {
+		return error(400, 'Station ID is required');
 	}
 	const city = params.city;
 	const api : BusLogicAPI = getInstance(city);
@@ -12,10 +15,13 @@ export const GET = async ({ params }: RequestEvent) => {
 		return error(400, `City ${city} is not supported`);
 	}
 	if(!cacheRunner.hasFunction(city)) {
-		await cacheRunner.addFunction(city, api, 'getAllStations');
+		await cacheRunner.addFunction(city, api.getAllStations.bind(api));
 	}
 	const stations = await cacheRunner.get(city);
-	const station = stations[params.stationId?.toUpperCase() ?? '0'];
+	const station = stations[params.stationId.toUpperCase() ?? '0'];
+	if(!station) {
+		return error(404, `Station ID ${params.stationId} not found`);
+	}
 	const lines = await api.getStationArrivals(station);
 	return json({ station, lines });
 };

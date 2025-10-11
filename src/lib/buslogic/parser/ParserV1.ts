@@ -25,8 +25,8 @@ export class ParserV1 implements IParser {
         if (response.length == 0 || response[0].just_coordinates == "1") return [];
         const linesMap = response.toReversed().reduce((map: Map<string, Line>, value: any) => {
             const arrival: Arrival = {
-                secondsLeft: value.seconds_left,
-                stationsBetween: value.stations_between,
+                etaSeconds: value.seconds_left,
+                etaStations: value.stations_between,
                 stationName: value.vehicles[0].station_name,
                 garageNo: value.vehicles[0].garageNo,
                 coords: { lat: value.vehicles[0].lat, lon: value.vehicles[0].lng },

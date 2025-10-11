@@ -24,6 +24,13 @@ const instances: { [key: string]: BusLogicAPI } = {
 		apiKey: 'cddfd29e495b4851965d'
 	})
 };
+
+const cityCenters = {
+    bg: [44.81254796404323, 20.46145496621977],
+    ns: [45.267136, 19.833549],
+    ni: [43.3209, 21.8958],
+};
+
 const day = 60 * 60 * 24;
 export const cacheRunner = new CachedFunctionRunner<AllStationsResponse>(
 	new LocalTimedCache<AllStationsResponse>(day)
@@ -39,6 +46,8 @@ export const getInstance = (city: string) => {
 export const getCities = () => {
 	return Object.entries(instances).map(([key, value]) => ({
 		key,
-		name: value.city
+		name: value.city,
+		center: cityCenters[key as keyof typeof cityCenters]
 	}));
 };
+

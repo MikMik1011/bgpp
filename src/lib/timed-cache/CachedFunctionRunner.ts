@@ -14,12 +14,11 @@ export class CachedFunctionRunner<T> {
         this.cacheProvider = cacheProvider;
     }
 
-    public async addFunction(key: string, obj: any, methodName: string, ...args: any[]): Promise<T> {
-        const func = obj[methodName];
+    public async addFunction(key: string, func: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
         if (typeof func !== 'function') {
-            throw new Error(`Method ${methodName} not found on object`);
+            throw new Error(`Provided func is not a function`);
         }
-        this.functionMap.set(key, { func: func.bind(obj), args });
+        this.functionMap.set(key, { func, args });
         return this.run(key);
     }
 

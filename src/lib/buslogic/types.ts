@@ -15,8 +15,8 @@ export type Line = {
 }
 
 export type Arrival = {
-    secondsLeft: number;
-    stationsBetween: number;
+    etaSeconds: number;
+    etaStations: number;
     stationName?: string;
     garageNo: string;
     coords: Coords;
