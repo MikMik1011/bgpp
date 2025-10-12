@@ -1,7 +1,7 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { BusLogicAPIV2 } from '$lib/buslogic/api/BusLogicAPIV2';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
-import { cacheRunner, getInstance } from '../../../busLogicManager';
+import { cacheRunner, getInstance } from '../../../../busLogicManager';
 import { createHash } from 'crypto';
 
 export const GET = async ({ params, fetch }: RequestEvent) => {

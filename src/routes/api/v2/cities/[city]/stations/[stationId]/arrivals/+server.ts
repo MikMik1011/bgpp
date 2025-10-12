@@ -1,6 +1,6 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
-import { cacheRunner, getInstance } from '../../../../busLogicManager';
+import { cacheRunner, getInstance } from '../../../../../busLogicManager';
 
 export const GET = async ({ params }: RequestEvent) => {
 	if(!params.city) {
