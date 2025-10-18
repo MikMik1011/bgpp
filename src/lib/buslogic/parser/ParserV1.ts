@@ -13,7 +13,7 @@ export class ParserV1 implements IParser {
             name: value.name,
             uid: value.id,
             id: value.station_id,
-            coords: { lat: value.coordinates.latitude, lon: value.coordinates.longitude },
+            coords: { lat: Number(value.coordinates.latitude), lon: Number(value.coordinates.longitude) },
         };
 
         const hash = defaultHash(JSON.stringify(stationWithoutHash));
@@ -39,7 +39,7 @@ export class ParserV1 implements IParser {
                 etaStations: value.stations_between,
                 stationName: value.vehicles[0].station_name,
                 garageNo: value.vehicles[0].garageNo,
-                coords: { lat: value.vehicles[0].lat, lon: value.vehicles[0].lng },
+                coords: { lat: Number(value.vehicles[0].lat), lon: Number(value.vehicles[0].lng) },
             };
     
             if (map.has(value.line_number)) {
