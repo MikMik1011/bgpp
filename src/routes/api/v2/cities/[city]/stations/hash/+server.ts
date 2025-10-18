@@ -1,8 +1,7 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
-import { BusLogicAPIV2 } from '$lib/buslogic/api/BusLogicAPIV2';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import { cacheRunner, getInstance } from '../../../../busLogicManager';
-import { createHash } from 'crypto';
+import { defaultHash } from '$lib/utils/hash';
 
 export const GET = async ({ params, fetch }: RequestEvent) => {
 	if (!params.city) {
@@ -18,7 +17,8 @@ export const GET = async ({ params, fetch }: RequestEvent) => {
 	}
 	const stations = await cacheRunner.get(city);
 
-	const hash = createHash('sha256').update(JSON.stringify(stations)).digest('hex');
+	const combinedHash = Object.values(stations).map(station => station.hash).toSorted().join('');
+	const totalHash = defaultHash(combinedHash);
 
-	return json({ hash });
+	return json({ hash: totalHash });
 };

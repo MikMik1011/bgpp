@@ -12,9 +12,7 @@
 
     <h3>Stations</h3>
     <ul>
-        <li><code>/api/v2/cities/[city]/stations?radius=[radiusInMeters]</code> – Get all stations in a city</li>
-        <ul>
-            <li>Optional query parameter <code>radius</code> (in meters) to include bounding boxes for all stations</li>
+        <li><code>/api/v2/cities/[city]/stations</code> – Get all stations in a city</li>
         <li><code>/api/v2/cities/[city]/stations/hash</code> – Get hash value for all stations in a city</li>
     </ul>
     <br>

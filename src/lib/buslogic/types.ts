@@ -6,6 +6,7 @@ export type Station =  {
     uid: string;
     id: string;
     coords: Coords;
+    hash: string;
 }
 
 export type Line = {

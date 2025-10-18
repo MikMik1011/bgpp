@@ -1,7 +1,6 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import { cacheRunner, getInstance } from '../../../../busLogicManager';
-import { addBoundingBoxesToStations } from '../utils';
 
 export const GET = async ({ params, url }: RequestEvent) => {
 	if (!params.city) {
@@ -26,16 +25,6 @@ export const GET = async ({ params, url }: RequestEvent) => {
 	const station = stations[params.stationId.toUpperCase() ?? '0'];
 	if (!station) {
 		return error(404, `Station ID ${params.stationId} not found`);
-	}
-
-	if(url.searchParams.has('radius')) {
-		const radius = parseInt(url.searchParams.get('radius') || '0');
-		if(isNaN(radius) || radius <= 0) {
-			return error(400, 'Radius must be a positive number');
-		}
-		
-		const stationWithBoundingBox = addBoundingBoxesToStations([station], radius)[0];
-		return json(stationWithBoundingBox);
 	}
 
 	return json(station);

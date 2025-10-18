@@ -1,21 +1,31 @@
 import type { IParser } from "./IParser";
 import type { AllStationsResponse, Arrival, Line, Station } from "../types";
+import { defaultHash } from "$lib/utils/hash";
 
 /**
  * Parser v1
  * Compatible with BusLogicV1 and BusLogicV2
  */
 export class ParserV1 implements IParser {
+
+    private parseStation(value: any) : Station {
+        const stationWithoutHash = {
+            name: value.name,
+            uid: value.id,
+            id: value.station_id,
+            coords: { lat: value.coordinates.latitude, lon: value.coordinates.longitude },
+        };
+
+        const hash = defaultHash(JSON.stringify(stationWithoutHash));
+        
+        return { ...stationWithoutHash, hash };
+
+    }
+
     parseAllStations(response: any): AllStationsResponse {
         return response.stations.reduce(
 			(acc: AllStationsResponse, value: any) => {
-				const station: Station = {
-					name: value.name,
-					uid: value.id,
-					id: value.station_id,
-					coords: { lat: value.coordinates.latitude, lon: value.coordinates.longitude }
-				};
-
+				const station = this.parseStation(value);
 				return { ...acc, [station.id.toUpperCase()]: station };
 			},
 			{}

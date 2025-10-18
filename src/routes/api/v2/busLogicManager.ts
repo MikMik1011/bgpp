@@ -3,7 +3,8 @@ import { BusLogicAPIV1 } from '$lib/buslogic/api/BusLogicAPIV1';
 import { BusLogicAPIV2 } from '$lib/buslogic/api/BusLogicAPIV2';
 import { CachedFunctionRunner } from '$lib/timed-cache/CachedFunctionRunner';
 import { LocalTimedCache } from '$lib/timed-cache/LocalTimedCache';
-import type { AllStationsResponse } from '$lib/buslogic/types';
+import type { AllStationsResponse, Coords } from '$lib/buslogic/types';
+import { djb2Hash } from '$lib/utils/hash';
 
 const instances: { [key: string]: BusLogicAPI } = {
 	bg: new BusLogicAPIV2({
@@ -25,11 +26,13 @@ const instances: { [key: string]: BusLogicAPI } = {
 	})
 };
 
+export const hashFunction = djb2Hash;
+
 const cityCenters = {
-    bg: [44.81254796404323, 20.46145496621977],
-    ns: [45.267136, 19.833549],
-    ni: [43.3209, 21.8958],
-};
+    bg: {lat: 44.81254796404323, lon: 20.46145496621977},
+    ns: {lat: 45.267136, lon: 19.833549},
+    ni: {lat: 43.3209, lon: 21.8958},
+} as Record<string, Coords>;
 
 const day = 60 * 60 * 24;
 export const cacheRunner = new CachedFunctionRunner<AllStationsResponse>(
@@ -47,7 +50,7 @@ export const getCities = () => {
 	return Object.entries(instances).map(([key, value]) => ({
 		key,
 		name: value.city,
-		center: cityCenters[key as keyof typeof cityCenters]
+		center: cityCenters[key]
 	}));
 };
 
