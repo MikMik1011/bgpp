@@ -6,7 +6,7 @@ import { LocalTimedCache } from '$lib/timed-cache/LocalTimedCache';
 import type { AllStationsResponse, Coords } from '$lib/buslogic/types';
 import { djb2Hash } from '$lib/utils/hash';
 
-const instances: { [key: string]: BusLogicAPI } = {
+const instances: { [id: string]: BusLogicAPI } = {
 	bg: new BusLogicAPIV2({
 		city: 'Beograd',
 		baseUrl: 'https://announcement-bgnaplata.ticketing.rs',
@@ -48,7 +48,7 @@ export const getInstance = (city: string) => {
 
 export const getCities = () => {
 	return Object.entries(instances).map(([key, value]) => ({
-		key,
+		id: key,
 		name: value.city,
 		center: cityCenters[key]
 	}));
