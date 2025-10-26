@@ -3,9 +3,11 @@ import type { IParser } from '../parser/IParser';
 import type { AllStationsResponse, Station, Line, BusLogicAPIV2Params } from '../types';
 import crypto from 'crypto';
 import { ParserV2 } from '../parser/ParserV2';
+import JSZip from 'jszip';
 
 const endpoints = {
-	allStations: '/publicapi/v1/networkextended.php?action=get_cities_extended',
+	allStationsZip: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended_zip',
+	allStationsDB: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended',
 	stationInfo: '/publicapi/v2/api.php'
 };
 
@@ -14,11 +16,12 @@ const userAgent = 'okhttp/4.10.0';
 type ArrivalsPayload = {
 	station_uid: string;
 	session_id: string;
-}
+};
 
 export class BusLogicAPIV2 extends BusLogicAPI {
 	private readonly urls: {
-		readonly allStations: string;
+		readonly allStationsZip: string;
+		readonly allStationsDB: string;
 		readonly stationInfo: string;
 	};
 
@@ -34,14 +37,38 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 
 	protected parser: IParser = new ParserV2();
 
-	async getAllStations(): Promise<AllStationsResponse> {
-		const res = await fetch(this.urls.allStations, { headers: this.headers });
+	private async getAllStationsResponseZip(): Promise<any> {
+		const res = await fetch(this.urls.allStationsZip, { headers: this.headers });
 		if (!res.ok) {
 			throw new Error(`Failed to fetch all stations: ${res.statusText}`);
 		}
 
-		const json = await res.json();
-		return this.parser.parseAllStations(json);
+		const blob = await res.blob();
+		const arrayBuffer = await blob.arrayBuffer();
+		const zip = await JSZip.loadAsync(arrayBuffer);
+		const jsonStr = await zip.file('cities_extended.json')?.async('string');
+		if (!jsonStr) {
+			throw new Error('cities_extended.json not found in zip');
+		}
+		return JSON.parse(jsonStr);
+	}
+
+	private async getAllStationsResponseDB(): Promise<any> {
+		const res = await fetch(this.urls.allStationsDB, { headers: this.headers });
+		if (!res.ok) {
+			throw new Error(`Failed to fetch all stations: ${res.statusText}`);
+		}
+		return res.json();
+	}
+
+	async getAllStations(): Promise<AllStationsResponse> {
+		try {
+			const allStationsResponse = await this.getAllStationsResponseZip();
+			return this.parser.parseAllStations(allStationsResponse);
+		} catch (error) {
+			const allStationsResponse = await this.getAllStationsResponseDB();
+			return this.parser.parseAllStations(allStationsResponse);
+		}
 	}
 
 	async getStationArrivals(station: Station): Promise<Line[]> {
@@ -87,11 +114,12 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 		return JSON.parse(decrypted);
 	}
 
-	constructor({city, baseUrl, apiKey, encKey, encIV} : BusLogicAPIV2Params) {
-		super({city, baseUrl, apiKey});
+	constructor({ city, baseUrl, apiKey, encKey, encIV }: BusLogicAPIV2Params) {
+		super({ city, baseUrl, apiKey });
 
 		this.urls = {
-			allStations: this._baseUrl + endpoints.allStations,
+			allStationsZip: this._baseUrl + endpoints.allStationsZip,
+			allStationsDB: this._baseUrl + endpoints.allStationsDB,
 			stationInfo: this._baseUrl + endpoints.stationInfo
 		};
 
