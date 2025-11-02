@@ -35,11 +35,11 @@ export class ParserV1 implements IParser {
         if (response.length == 0 || response[0].just_coordinates == "1") return [];
         const linesMap = response.toReversed().reduce((map: Map<string, Line>, value: any) => {
             const arrival: Arrival = {
-                etaSeconds: value.seconds_left,
-                etaStations: value.stations_between,
-                stationName: value.vehicles[0].station_name,
-                garageNo: value.vehicles[0].garageNo,
-                coords: { lat: Number(value.vehicles[0].lat), lon: Number(value.vehicles[0].lng) },
+                etaSeconds: value.seconds_left ?? 0,
+                etaStations: value.stations_between ?? 0,
+                stationName: value.vehicles[0].station_name ?? 'Unknown',
+                garageNo: value.vehicles[0].garageNo ?? 'Unknown',
+                coords: { lat: Number(value.vehicles[0].lat ?? '0'), lon: Number(value.vehicles[0].lng ?? '0') },
             };
     
             if (map.has(value.line_number)) {
