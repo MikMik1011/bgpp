@@ -31,7 +31,7 @@ export class ParserV1 implements IParser {
 			{}
 		);
     }
-    parseStationArrivals(response: any): Line[] {
+    parseStationLiveArrivals(response: any): Line[] {
         if (response.length == 0 || response[0].just_coordinates == "1") return [];
         const linesMap = response.toReversed().reduce((map: Map<string, Line>, value: any) => {
             const arrival: Arrival = {

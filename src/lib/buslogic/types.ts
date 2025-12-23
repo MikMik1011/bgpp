@@ -38,3 +38,8 @@ export type BusLogicAPIV2Params = BusLogicAPIParams & {
     encKey: string;
     encIV: string;
 }
+
+export type BusLogicLine = {
+    number: string;
+    direction: string;
+}

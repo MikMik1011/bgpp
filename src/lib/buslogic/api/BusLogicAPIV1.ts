@@ -3,6 +3,8 @@ import type { IParser } from '../parser/IParser';
 import { ParserV1 } from '../parser/ParserV1';
 import type { AllStationsResponse, Station, Line, BusLogicAPIParams } from '../types';
 import JSZip from 'jszip';
+import type { NodeCacheStore } from '@cacheable/node-cache';
+import { Cached } from '$lib/cache/Cached';
 
 const endpoints = {
 	allStationsZip: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended_zip',
@@ -50,7 +52,11 @@ export class BusLogicAPIV1 extends BusLogicAPI {
 		return res.json();
 	}
 
-	async getAllStations(): Promise<AllStationsResponse> {
+	@Cached<[], AllStationsResponse>({
+		key: () => 'ALL_STATIONS',
+		ttl: '1d'
+	})
+	async getAllStations(): Promise<AllStationsResponse> {		
 		try {
 			const allStationsResponse = await this.getAllStationsResponseZip();
 			return this.parser.parseAllStations(allStationsResponse);
@@ -60,18 +66,22 @@ export class BusLogicAPIV1 extends BusLogicAPI {
 		}
 	}
 
-	async getStationArrivals(station: Station): Promise<Line[]> {
+	@Cached<[Station], Line[]>({
+		key: (station: Station) => `ARRIVALS_${station.id}`,
+		ttl: '15s'
+	})
+	async getStationLiveArrivals(station: Station): Promise<Line[]> {
 		const res = await fetch(this.urls.stationInfo + station.uid, { headers: this.headers });
 		if (!res.ok) {
 			throw new Error(`Failed to fetch all arrivals: ${res.statusText}`);
 		}
-
 		const json = await res.json();
-		return this.parser.parseStationArrivals(json);
+		const parsed = this.parser.parseStationLiveArrivals(json);
+		return parsed;
 	}
 
-	constructor({city, baseUrl, apiKey} : BusLogicAPIParams) {
-		super({city, baseUrl, apiKey});
+	constructor({city, baseUrl, apiKey} : BusLogicAPIParams, cache? : NodeCacheStore<any>) {
+		super({city, baseUrl, apiKey}, cache);
 		this.urls = {
 			allStationsZip: this._baseUrl + endpoints.allStationsZip,
 			allStationsDB: this._baseUrl + endpoints.allStationsDB,

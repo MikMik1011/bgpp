@@ -1,6 +1,6 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
-import { cacheRunner, getInstance } from '../../../busLogicManager';
+import { getInstance } from '../../../busLogicManager';
 
 export const GET = async ({ params, url }: RequestEvent) => {
 	if (!params.city) {
@@ -11,10 +11,7 @@ export const GET = async ({ params, url }: RequestEvent) => {
 	if (!api) {
 		return error(400, `City ${city} is not supported`);
 	}
-	if (!cacheRunner.hasFunction(city)) {
-		await cacheRunner.addFunction(city, api.getAllStations.bind(api));
-	}
-	const stations = await cacheRunner.get(city);
+	const stations = await api.getAllStations()
 	if (!stations) {
 		return error(500, 'Failed to retrieve stations');
 	}
