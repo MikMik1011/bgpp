@@ -1,11 +1,7 @@
-import { BusLogicAPI } from './BusLogicAPI';
-import type { IParser } from '../parser/IParser';
-import type { AllStationsResponse, Station, Line, BusLogicAPIV2Params } from '../types';
+import { BusLogicRepo } from './BusLogicRepo';
+import type { BusLogicRepoV2Params } from '../../types';
 import crypto from 'crypto';
-import { ParserV2 } from '../parser/ParserV2';
 import JSZip from 'jszip';
-import type { NodeCacheStore } from '@cacheable/node-cache';
-import { Cached } from '$lib/cache/Cached';
 
 const endpoints = {
 	allStationsZip: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended_zip',
@@ -20,7 +16,7 @@ type ArrivalsPayload = {
 	session_id: string;
 };
 
-export class BusLogicAPIV2 extends BusLogicAPI {
+export class BusLogicRepoV2 extends BusLogicRepo {
 	private readonly urls: {
 		readonly allStationsZip: string;
 		readonly allStationsDB: string;
@@ -36,8 +32,6 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 		key: Buffer;
 		iv: Buffer;
 	};
-
-	protected parser: IParser = new ParserV2();
 
 	private async getAllStationsResponseZip(): Promise<any> {
 		const res = await fetch(this.urls.allStationsZip, { headers: this.headers });
@@ -63,27 +57,17 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 		return res.json();
 	}
 
-	@Cached<[], AllStationsResponse>({
-		key: () => 'ALL_STATIONS',
-		ttl: '1d'
-	})
-	async getAllStations(): Promise<AllStationsResponse> {
+	async getAllStations(): Promise<any> {
 		try {
-			const allStationsResponse = await this.getAllStationsResponseZip();
-			return this.parser.parseAllStations(allStationsResponse);
+			return this.getAllStationsResponseZip();
 		} catch (error) {
-			const allStationsResponse = await this.getAllStationsResponseDB();
-			return this.parser.parseAllStations(allStationsResponse);
+			return this.getAllStationsResponseDB();
 		}
 	}
 
-	@Cached<[Station], Line[]>({
-		key: (station: Station) => `ARRIVALS_${station.id}`,
-		ttl: '15s'
-	})
-	async getStationLiveArrivals(station: Station): Promise<Line[]> {
+	async getStationLiveArrivals(stationUid: string): Promise<any> {
 		const payload: ArrivalsPayload = {
-			station_uid: station.uid,
+			station_uid: stationUid,
 			session_id: `A${Date.now()}`
 		};
 		const encrypted = this.encrypt(payload);
@@ -99,8 +83,7 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 		if (!res.ok) {
 			throw new Error(`Failed to fetch all arrivals: ${res.statusText}`);
 		}
-		const json = this.decrypt(await res.text());
-		return this.parser.parseStationLiveArrivals(json.data);
+		return this.decrypt(await res.text())?.data;
 	}
 
 	encrypt(payload: ArrivalsPayload): string {
@@ -128,11 +111,8 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 		return JSON.parse(decrypted);
 	}
 
-	constructor(
-		{ city, baseUrl, apiKey, encKey, encIV }: BusLogicAPIV2Params,
-		cache?: NodeCacheStore<any>
-	) {
-		super({ city, baseUrl, apiKey }, cache);
+	constructor({ baseUrl, apiKey, encKey, encIV }: BusLogicRepoV2Params) {
+		super({ baseUrl, apiKey });
 
 		this.urls = {
 			allStationsZip: this._baseUrl + endpoints.allStationsZip,

@@ -1,4 +1,4 @@
-import type { AllStationsResponse, Line } from "../types";
+import type { AllStationsResponse, Line } from "../../types";
 import type { IParser } from "./IParser";
 import { ParserV1 } from "./ParserV1";
 
