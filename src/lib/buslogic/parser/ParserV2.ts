@@ -11,7 +11,7 @@ export class ParserV2 extends ParserV1 implements IParser {
     parseAllStations(response: any): AllStationsResponse {
         return super.parseAllStations(response);
     }
-    parseStationArrivals(response: any): Line[] {
-        return super.parseStationArrivals(response);
+    parseStationLiveArrivals(response: any): Line[] {
+        return super.parseStationLiveArrivals(response);
     }
 }

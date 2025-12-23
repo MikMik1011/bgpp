@@ -4,6 +4,8 @@ import type { AllStationsResponse, Station, Line, BusLogicAPIV2Params } from '..
 import crypto from 'crypto';
 import { ParserV2 } from '../parser/ParserV2';
 import JSZip from 'jszip';
+import type { NodeCacheStore } from '@cacheable/node-cache';
+import { Cached } from '$lib/cache/Cached';
 
 const endpoints = {
 	allStationsZip: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended_zip',
@@ -61,6 +63,10 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 		return res.json();
 	}
 
+	@Cached<[], AllStationsResponse>({
+		key: () => 'ALL_STATIONS',
+		ttl: '1d'
+	})
 	async getAllStations(): Promise<AllStationsResponse> {
 		try {
 			const allStationsResponse = await this.getAllStationsResponseZip();
@@ -71,7 +77,11 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 		}
 	}
 
-	async getStationArrivals(station: Station): Promise<Line[]> {
+	@Cached<[Station], Line[]>({
+		key: (station: Station) => `ARRIVALS_${station.id}`,
+		ttl: '15s'
+	})
+	async getStationLiveArrivals(station: Station): Promise<Line[]> {
 		const payload: ArrivalsPayload = {
 			station_uid: station.uid,
 			session_id: `A${Date.now()}`
@@ -90,13 +100,17 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 			throw new Error(`Failed to fetch all arrivals: ${res.statusText}`);
 		}
 		const json = this.decrypt(await res.text());
-		return this.parser.parseStationArrivals(json.data);
+		return this.parser.parseStationLiveArrivals(json.data);
 	}
 
 	encrypt(payload: ArrivalsPayload): string {
 		const payloadString = JSON.stringify(payload);
 
-		const cipher = crypto.createCipheriv('aes-256-cbc', this.encryption.key, this.encryption.iv);
+		const cipher = crypto.createCipheriv(
+			'aes-256-cbc',
+			new Uint8Array(this.encryption.key),
+			new Uint8Array(this.encryption.iv)
+		);
 		const encrypted = cipher.update(payloadString, 'utf8', 'base64') + cipher.final('base64');
 		return encrypted;
 	}
@@ -106,16 +120,19 @@ export class BusLogicAPIV2 extends BusLogicAPI {
 
 		const decipher = crypto.createDecipheriv(
 			'aes-256-cbc',
-			this.encryption.key,
-			this.encryption.iv
+			new Uint8Array(this.encryption.key),
+			new Uint8Array(this.encryption.iv)
 		);
 		const decrypted = decipher.update(urlDecoded, 'base64', 'utf8') + decipher.final('utf8');
 
 		return JSON.parse(decrypted);
 	}
 
-	constructor({ city, baseUrl, apiKey, encKey, encIV }: BusLogicAPIV2Params) {
-		super({ city, baseUrl, apiKey });
+	constructor(
+		{ city, baseUrl, apiKey, encKey, encIV }: BusLogicAPIV2Params,
+		cache?: NodeCacheStore<any>
+	) {
+		super({ city, baseUrl, apiKey }, cache);
 
 		this.urls = {
 			allStationsZip: this._baseUrl + endpoints.allStationsZip,

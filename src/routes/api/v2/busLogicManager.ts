@@ -1,9 +1,7 @@
 import type { BusLogicAPI } from '$lib/buslogic/api/BusLogicAPI';
 import { BusLogicAPIV1 } from '$lib/buslogic/api/BusLogicAPIV1';
 import { BusLogicAPIV2 } from '$lib/buslogic/api/BusLogicAPIV2';
-import { CachedFunctionRunner } from '$lib/timed-cache/CachedFunctionRunner';
-import { LocalTimedCache } from '$lib/timed-cache/LocalTimedCache';
-import type { AllStationsResponse, Coords } from '$lib/buslogic/types';
+import type { Coords } from '$lib/buslogic/types';
 import { djb2Hash } from '$lib/utils/hash';
 
 const instances: { [id: string]: BusLogicAPI } = {
@@ -35,9 +33,6 @@ const cityCenters = {
 } as Record<string, Coords>;
 
 const day = 60 * 60 * 24;
-export const cacheRunner = new CachedFunctionRunner<AllStationsResponse>(
-	new LocalTimedCache<AllStationsResponse>(day)
-);
 
 export const getInstance = (city: string) => {
 	if (instances[city]) {
