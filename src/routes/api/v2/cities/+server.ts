@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { getCities } from '../busLogicManager';
+import { getCities } from '../bgppManager';
 
 export const GET = () => {
 	const cities = getCities();

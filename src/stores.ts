@@ -1,4 +1,4 @@
-import type { AllStationsResponse } from "$lib/buslogic/types";
+import type { AllStationsResponse } from "$lib/types";
 import type { Selected } from "bits-ui";
 import { derived, get, readable, readonly, writable } from "svelte/store";
 

@@ -1,5 +1,5 @@
 import type { IParser } from "./IParser";
-import type { AllStationsResponse, Arrival, Line, Station } from "../types";
+import type { AllStationsResponse, Arrival, Line, Station } from "../../types";
 import { defaultHash } from "$lib/utils/hash";
 
 /**

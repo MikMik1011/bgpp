@@ -1,3 +1,6 @@
+import type { BusLogicRepo } from "./buslogic/repo/BusLogicRepo";
+import type { IParser } from "./bgpp/parser/IParser";
+
 export type AllStationsResponse = {
     [stationId: string]: Station;
 }
@@ -28,13 +31,12 @@ export type Coords = {
     lon: number;
 }
 
-export type BusLogicAPIParams = {
-    city: string;
+export type BusLogicRepoParams = {
     baseUrl: string;
     apiKey: string;
 }
 
-export type BusLogicAPIV2Params = BusLogicAPIParams & {
+export type BusLogicRepoV2Params = BusLogicRepoParams & {
     encKey: string;
     encIV: string;
 }
@@ -43,3 +45,12 @@ export type BusLogicLine = {
     number: string;
     direction: string;
 }
+
+export type BGPPCity = {
+    city: string,
+    center: Coords,
+    repo: BusLogicRepo,
+    parser: IParser
+}
+
+export type CityID = string;
