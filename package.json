@@ -42,6 +42,7 @@
 	"dependencies": {
 		"@cacheable/node-cache": "^1.7.6",
 		"jszip": "^3.10.1",
-		"keyv": "^5.5.5"
+		"keyv": "^5.5.5",
+		"p-limit": "^7.2.0"
 	}
 }
