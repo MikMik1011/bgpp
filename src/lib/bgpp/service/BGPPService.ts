@@ -72,8 +72,8 @@ export class BGPPService {
 			return directions.flatMap((direction) =>
 				concurrencyLimit(async () => {
 					try {
-						const schedule = await instance.repo.getLineTimetable(line, direction, today);
-						//TODO: remember todays timetable in cache
+						const bgppLine = { line, direction };
+						const schedule = await this.getLineTimetable(city, bgppLine, today);
 						const stations = schedule.map((s: any) => uidToIdMap[s.station_id]).filter(Boolean);
 						return { line, direction, stations };
 					} catch {
@@ -172,6 +172,11 @@ export class BGPPService {
 		return stationId;
 	}
 
+	@Cached<[CityID, Station, string | null], Record<string, number[]>>({
+		key: (city: CityID, station: Station, date: string | null) =>
+			`${city}_BGPPSCHEDULE_${station.id}_${date ?? 'now'}`,
+		ttl: '1m'
+	})
 	async getStationSchedule(
 		city: CityID,
 		station: Station,
@@ -194,11 +199,7 @@ export class BGPPService {
 						console.log(offsetDays);
 
 						const day = startDay.add(offsetDays, 'day').format('YYYY-MM-DD');
-						const schedule = await this.busLogicInstances[city].repo.getLineTimetable(
-							line.line,
-							line.direction,
-							day
-						);
+						const schedule = await this.getLineTimetable(city, line, day);
 						const stationSchedule = schedule.find(
 							(s: any) => s.station_id === station.uid.toString()
 						);
@@ -222,6 +223,19 @@ export class BGPPService {
 			const lineId = `${entry.line.line}`;
 			return { ...acc, [lineId]: entry.schedule };
 		}, {});
+	}
+
+	@Cached<[CityID, BGPPLine, string], any[]>({
+		key: (city: CityID, line: BGPPLine, date: string) =>
+			`${city}_REPOTIMETABLE_${line.line}|${line.direction}_${date}`,
+		ttl: '1d'
+	})
+	private async getLineTimetable(city: CityID, line: BGPPLine, date: string) {
+		return await this.busLogicInstances[city].repo.getLineTimetable(
+			line.line,
+			line.direction,
+			date
+		);
 	}
 
 	private async seedCityCache(city: CityID): Promise<void> {
