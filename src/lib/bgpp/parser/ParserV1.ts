@@ -58,23 +58,23 @@ export class ParserV1 implements IParser {
 		return Array.from(linesMap.values());
 	}
 
-	parseStationLineTimetable(response: any, day: string) : number[] {
+	parseStationLineTimetable(response: any, date: string) : number[] {
 		return (response.departure_time as string[]).map((time: string) => {
 			const tomorrow = time.includes('(+24h)');
 			const timeWithoutSuffix = time.replace('(+24h)', '').trim();
-			const timestamp = dayjs(`${day} ${timeWithoutSuffix}`)
+			const timestamp = dayjs(`${date} ${timeWithoutSuffix}`)
 				.add(tomorrow ? 1 : 0, 'day')
 				.unix();
 			return timestamp;
 		}).filter((timestamp: number) => timestamp > dayjs().add(-1, 'minute').unix()); // filter out departures that have already left (with a 1 minute buffer)
 	}
 
-    parseLineTimetable(response: any[], day: string, uidToIdMap: Record<string, string>): Record<string, number[]> {
+    parseLineTimetable(response: any[], date: string, uidToIdMap: Record<string, string>): Record<string, number[]> {
         return response.reduce((acc: Record<string, number[]>, entry: any) => {
             const stationId = uidToIdMap[entry.station_uid];
             if (!stationId) return acc;
 
-            const departureTimes = this.parseStationLineTimetable(entry, day);
+            const departureTimes = this.parseStationLineTimetable(entry, date);
             return { ...acc, [stationId]: departureTimes };
         });
     }

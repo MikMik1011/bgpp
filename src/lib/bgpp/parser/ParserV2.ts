@@ -14,14 +14,14 @@ export class ParserV2 extends ParserV1 implements IParser {
 	parseStationLiveArrivals(response: any): Line[] {
 		return super.parseStationLiveArrivals(response);
 	}
-	parseStationLineTimetable(response: any, day: string): number[] {
-		return super.parseStationLineTimetable(response, day);
+	parseStationLineTimetable(response: any, date: string): number[] {
+		return super.parseStationLineTimetable(response, date);
 	}
 	parseLineTimetable(
 		response: any[],
-		day: string,
+		date: string,
 		uidToIdMap: Record<string, string>
 	): Record<string, number[]> {
-		return super.parseLineTimetable(response, day, uidToIdMap);
+		return super.parseLineTimetable(response, date, uidToIdMap);
 	}
 }

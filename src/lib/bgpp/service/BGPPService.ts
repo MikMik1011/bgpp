@@ -183,8 +183,7 @@ export class BGPPService {
 		date?: string | null
 	): Promise<Record<string, number[]>> {
 		const stationLines = await this.getStationLines(city, station);
-		console.log(stationLines);
-		const startDay = date ? dayjs(date) : dayjs();
+		const startDate = date ? dayjs(date) : dayjs();
 		const concurrencyLimit = pLimit(20);
 
 		const tasks = stationLines.map((line) =>
@@ -196,15 +195,13 @@ export class BGPPService {
 					let parsedSchedule: number[] = [];
 					let offsetDays = 0;
 					while (parsedSchedule.length < MIN_SCHEDULED_ARRIVALS && offsetDays <= MAX_OFFSET_DAYS) {
-						console.log(offsetDays);
-
-						const day = startDay.add(offsetDays, 'day').format('YYYY-MM-DD');
-						const schedule = await this.getLineTimetable(city, line, day);
+						const date = startDate.add(offsetDays, 'day').format('YYYY-MM-DD');
+						const schedule = await this.getLineTimetable(city, line, date);
 						const stationSchedule = schedule.find(
 							(s: any) => s.station_id === station.uid.toString()
 						);
 						parsedSchedule = parsedSchedule.concat(
-							this.busLogicInstances[city].parser.parseStationLineTimetable(stationSchedule, day)
+							this.busLogicInstances[city].parser.parseStationLineTimetable(stationSchedule, date)
 						);
 						++offsetDays;
 					}
