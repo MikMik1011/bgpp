@@ -10,6 +10,7 @@ import type {
 import { Cached } from '$lib/cache/Cached';
 import type { NodeCacheStore } from '@cacheable/node-cache';
 import pLimit from 'p-limit';
+import dayjs from 'dayjs';
 
 export class BGPPService {
 	private readonly cache: NodeCacheStore<any>;
@@ -141,9 +142,9 @@ export class BGPPService {
 
 	async getStationLines(city: CityID, station: Station): Promise<BGPPLine[]> {
 		const stationsToLineMap = await this.getStationsToLineMap(city);
-		const lines = stationsToLineMap[station.uid];
+		const lines = stationsToLineMap[station.id];
 		if (!lines) {
-			throw new Error(`Station ${station.uid} not found in city ${city}`);
+			throw new Error(`Station ${station.id} not found in city ${city}`);
 		}
 		return lines;
 	}
@@ -169,6 +170,58 @@ export class BGPPService {
 			throw new Error(`Station UID ${stationUid} not found in city ${city}`);
 		}
 		return stationId;
+	}
+
+	async getStationSchedule(
+		city: CityID,
+		station: Station,
+		date?: string | null
+	): Promise<Record<string, number[]>> {
+		const stationLines = await this.getStationLines(city, station);
+		console.log(stationLines);
+		const startDay = date ? dayjs(date) : dayjs();
+		const concurrencyLimit = pLimit(20);
+
+		const tasks = stationLines.map((line) =>
+			concurrencyLimit(async () => {
+				try {
+					const MIN_SCHEDULED_ARRIVALS = 3;
+					const MAX_OFFSET_DAYS = 3;
+
+					let parsedSchedule: number[] = [];
+					let offsetDays = 0;
+					while (parsedSchedule.length < MIN_SCHEDULED_ARRIVALS && offsetDays <= MAX_OFFSET_DAYS) {
+						console.log(offsetDays);
+
+						const day = startDay.add(offsetDays, 'day').format('YYYY-MM-DD');
+						const schedule = await this.busLogicInstances[city].repo.getLineTimetable(
+							line.line,
+							line.direction,
+							day
+						);
+						const stationSchedule = schedule.find(
+							(s: any) => s.station_id === station.uid.toString()
+						);
+						parsedSchedule = parsedSchedule.concat(
+							this.busLogicInstances[city].parser.parseStationLineTimetable(stationSchedule, day)
+						);
+						++offsetDays;
+					}
+					return {
+						line: line,
+						schedule: parsedSchedule
+					};
+				} catch (error) {
+					console.error(`${line.line} errored`);
+					return null;
+				}
+			})
+		);
+		const schedules = (await Promise.all(tasks)).filter(Boolean) as any[];
+		return schedules.reduce((acc: Record<string, number[]>, entry) => {
+			const lineId = `${entry.line.line}`;
+			return { ...acc, [lineId]: entry.schedule };
+		}, {});
 	}
 
 	private async seedCityCache(city: CityID): Promise<void> {
