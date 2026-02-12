@@ -20,7 +20,7 @@ export const GET = async ({ params, url }: RequestEvent) => {
     if (!stations) {
         return error(500, 'Failed to retrieve stations');
     }
-    const station = stations[params.stationId.toUpperCase() ?? '0'];
+    const station = stations[params.stationId.toUpperCase()];
     if(!station) {
         return error(404, `Station ID ${params.stationId} not found`);
     }

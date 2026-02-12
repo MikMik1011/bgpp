@@ -200,6 +200,10 @@ export class BGPPService {
 						const stationSchedule = schedule.find(
 							(s: any) => s.station_id === station.uid.toString()
 						);
+						if (!stationSchedule) {
+							++offsetDays;
+							continue;
+						}
 						parsedSchedule = parsedSchedule.concat(
 							this.busLogicInstances[city].parser.parseStationLineTimetable(stationSchedule, date)
 						);

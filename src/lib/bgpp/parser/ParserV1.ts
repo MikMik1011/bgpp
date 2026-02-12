@@ -76,6 +76,6 @@ export class ParserV1 implements IParser {
 
             const departureTimes = this.parseStationLineTimetable(entry, date);
             return { ...acc, [stationId]: departureTimes };
-        });
+        }, {});
     }
 }
