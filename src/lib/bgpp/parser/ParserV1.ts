@@ -3,6 +3,11 @@ import type { AllStationsResponse, Arrival, Line, Station } from '../../types';
 import { defaultHash } from '$lib/utils/hash';
 import dayjs from "dayjs";
 
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 /**
  * Parser v1
@@ -63,6 +68,7 @@ export class ParserV1 implements IParser {
 			const tomorrow = time.includes('(+24h)');
 			const timeWithoutSuffix = time.replace('(+24h)', '').trim();
 			const timestamp = dayjs(`${date} ${timeWithoutSuffix}`)
+				.tz('Europe/Belgrade')
 				.add(tomorrow ? 1 : 0, 'day')
 				.unix();
 			return timestamp;
