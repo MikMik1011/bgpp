@@ -21,4 +21,10 @@
     <ul>
         <li><code>/api/v2/cities/[city]/stations/[stationId]/arrivals</code> – Get arrivals for a specific station</li>
     </ul>
+    <br>
+    
+    <h3>Schedules</h3>
+    <ul>
+        <li><code>/api/v2/cities/[city]/stations/[stationId]/schedule</code> – Get schedule for all lines arriving on a specific station</li>
+    </ul>
 </main>

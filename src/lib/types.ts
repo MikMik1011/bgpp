@@ -54,3 +54,12 @@ export type BGPPCity = {
 }
 
 export type CityID = string;
+
+export type BGPPLine = {
+    line: string;
+    direction: string;
+}
+
+export type BGPPLineData = BGPPLine & {
+    stations: string[];
+}

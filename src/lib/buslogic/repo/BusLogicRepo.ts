@@ -7,6 +7,7 @@ export abstract class BusLogicRepo {
 
     abstract getAllStations(): Promise<any>;
     abstract getStationLiveArrivals(stationUid: string): Promise<any>;
+    abstract getLineTimetable(lineNumber: string, direction: string, date: string, time?: string): Promise<any[]>;
 
     constructor ({baseUrl, apiKey} : BusLogicRepoParams) {
         this._baseUrl = baseUrl;

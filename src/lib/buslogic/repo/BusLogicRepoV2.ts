@@ -6,6 +6,7 @@ import JSZip from 'jszip';
 const endpoints = {
 	allStationsZip: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended_zip',
 	allStationsDB: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended',
+	timetable: '/publicapi/v1/timetable/timetable.php',
 	stationInfo: '/publicapi/v2/api.php'
 };
 
@@ -20,6 +21,7 @@ export class BusLogicRepoV2 extends BusLogicRepo {
 	private readonly urls: {
 		readonly allStationsZip: string;
 		readonly allStationsDB: string;
+		readonly timetable: string;
 		readonly stationInfo: string;
 	};
 
@@ -86,6 +88,31 @@ export class BusLogicRepoV2 extends BusLogicRepo {
 		return this.decrypt(await res.text())?.data;
 	}
 
+	async getLineTimetable(
+		lineNumber: string,
+		direction: string,
+		date: string,
+		time?: string
+	): Promise<any[]> {
+		const body = new URLSearchParams({
+			action: 'get_timetable',
+			line_number_for_display: lineNumber,
+			direction_id_for_display: direction,
+			date,
+			time: time ?? ''
+		});
+
+		const res = await fetch(this.urls.timetable, {
+			method: 'POST',
+			headers: this.headers,
+			body
+		});
+		if (!res.ok) {
+			throw new Error(`Failed to fetch timetable: ${res.statusText}`);
+		}
+		return res.json();
+	}
+
 	encrypt(payload: ArrivalsPayload): string {
 		const payloadString = JSON.stringify(payload);
 
@@ -113,10 +140,10 @@ export class BusLogicRepoV2 extends BusLogicRepo {
 
 	constructor({ baseUrl, apiKey, encKey, encIV }: BusLogicRepoV2Params) {
 		super({ baseUrl, apiKey });
-
 		this.urls = {
 			allStationsZip: this._baseUrl + endpoints.allStationsZip,
 			allStationsDB: this._baseUrl + endpoints.allStationsDB,
+			timetable: this._baseUrl + endpoints.timetable,
 			stationInfo: this._baseUrl + endpoints.stationInfo
 		};
 
