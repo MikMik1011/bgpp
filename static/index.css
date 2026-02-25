@@ -1,7 +1,7 @@
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
   text-align: center;
-  background-position: center center;
+  background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-image: url("Pics/beograd.jpg");
@@ -11,8 +11,7 @@ body {
 }
 
 h1, h3 {
-  text-align: center;
-  color: #000000;
+  color: black;
 }
 
 form {
@@ -22,7 +21,7 @@ form {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: background-color .3s, box-shadow .3s;
 }
 
 form:hover {
@@ -45,19 +44,21 @@ button,
 input[type="checkbox"] {
   width: 100%;
   padding: 12px;
-  box-sizing: border-box;
   margin-bottom: 15px;
+  box-sizing: border-box;
   border: 1px solid #555;
   border-radius: 6px;
   background-color: rgba(45, 45, 45, 0.9);
   color: #1abc9c;
-  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  transition: background-color .3s, border-color .3s;
 }
 
-#sort-data-wrapper{
+#sort-data-wrapper {
   text-align: center;
-  margin: auto 20px;
+  margin: 0 20px;
   display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 select:focus,
@@ -67,31 +68,22 @@ button:focus {
   border-color: #1abc9c;
 }
 
-.button-container {
-  text-align: center;
-}
-
-#map{
+#map {
   width: 30vw;
   height: 30vw;
   margin: auto;
   border: 2px solid black;
 }
 
-#sortLines, #dataSaver {
-  color: black;
-}
-
 #result {
   color: #1abc9c;
-  /*max-width: 800px;*/
   width: fit-content;
   margin: 20px auto;
   background-color: rgba(53, 53, 53, 0.9);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: background-color .3s, box-shadow .3s;
 }
 
 #result:hover {
@@ -119,15 +111,21 @@ th, td {
 
 thead {
   background-color: #1abc9c;
-  color: #fff;
+  color: white;
 }
 
 @media screen and (max-width: 600px) {
   #map {
-    width: 100vw;
-    height: 50vh;
+      width: 100vw;
+      height: 50vh;
   }
+
   #submit {
-    width: 35%;
+      width: 35%;
   }
+}
+
+a, a:visited, a:link, a:active {
+  color: black;
+  text-decoration: underline;
 }
