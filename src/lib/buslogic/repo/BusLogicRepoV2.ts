@@ -1,11 +1,9 @@
 import { BusLogicRepo } from './BusLogicRepo';
 import type { BusLogicRepoV2Params } from '../../types';
 import crypto from 'crypto';
-import JSZip from 'jszip';
 
 const endpoints = {
-	allStationsZip: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended_zip',
-	allStationsDB: '/publicapi/v1/networkextended.php?ibfm=TM000001&action=get_cities_extended',
+	allStations: '/publicapi/v1/networkextended.php',
 	stationInfo: '/publicapi/v2/api.php'
 };
 
@@ -18,8 +16,7 @@ type ArrivalsPayload = {
 
 export class BusLogicRepoV2 extends BusLogicRepo {
 	private readonly urls: {
-		readonly allStationsZip: string;
-		readonly allStationsDB: string;
+		readonly allStations: string;
 		readonly stationInfo: string;
 	};
 
@@ -33,36 +30,16 @@ export class BusLogicRepoV2 extends BusLogicRepo {
 		iv: Buffer;
 	};
 
-	private async getAllStationsResponseZip(): Promise<any> {
-		const res = await fetch(this.urls.allStationsZip, { headers: this.headers });
-		if (!res.ok) {
-			throw new Error(`Failed to fetch all stations: ${res.statusText}`);
-		}
-
-		const blob = await res.blob();
-		const arrayBuffer = await blob.arrayBuffer();
-		const zip = await JSZip.loadAsync(arrayBuffer);
-		const jsonStr = await zip.file('cities_extended.json')?.async('string');
-		if (!jsonStr) {
-			throw new Error('cities_extended.json not found in zip');
-		}
-		return JSON.parse(jsonStr);
-	}
-
-	private async getAllStationsResponseDB(): Promise<any> {
-		const res = await fetch(this.urls.allStationsDB, { headers: this.headers });
+	async getAllStations(): Promise<any> {
+		const res = await fetch(this.urls.allStations, {
+			method: 'POST',
+			headers: { ...this.headers, 'Content-Type': 'application/json' },
+			body: JSON.stringify({ action: 'get_cities_extended' })
+		});
 		if (!res.ok) {
 			throw new Error(`Failed to fetch all stations: ${res.statusText}`);
 		}
 		return res.json();
-	}
-
-	async getAllStations(): Promise<any> {
-		try {
-			return this.getAllStationsResponseZip();
-		} catch (error) {
-			return this.getAllStationsResponseDB();
-		}
 	}
 
 	async getStationLiveArrivals(stationUid: string): Promise<any> {
@@ -115,8 +92,7 @@ export class BusLogicRepoV2 extends BusLogicRepo {
 		super({ baseUrl, apiKey });
 
 		this.urls = {
-			allStationsZip: this._baseUrl + endpoints.allStationsZip,
-			allStationsDB: this._baseUrl + endpoints.allStationsDB,
+			allStations: this._baseUrl + endpoints.allStations,
 			stationInfo: this._baseUrl + endpoints.stationInfo
 		};
 
