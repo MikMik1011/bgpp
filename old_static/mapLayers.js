@@ -1,10 +1,14 @@
+// API keys/tokens are injected at runtime via window.MAP_CONFIG (set by the
+// server before this script loads) instead of being hardcoded in source.
+const mapConfig = window.MAP_CONFIG || {};
+
 const mapLayers = {
   Transport: L.tileLayer(
     "https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey={apikey}",
     {
       attribution:
         '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      apikey: "9e9bca8ab3c2417fbe0d0e233c0cfe3d",
+      apikey: mapConfig.thunderforestApiKey,
       maxZoom: 22,
     }
   ),
@@ -13,7 +17,7 @@ const mapLayers = {
     {
       attribution:
         '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      apikey: "9e9bca8ab3c2417fbe0d0e233c0cfe3d",
+      apikey: mapConfig.thunderforestApiKey,
       maxZoom: 22,
     }
   ),
@@ -37,8 +41,7 @@ const mapLayers = {
       minZoom: 0,
       maxZoom: 22,
       subdomains: "abcd",
-      accessToken:
-        "kE6fKF5AORjPMSjPl57PBu9FNNQd1crWTUH8o0J5Px8F8bfQXWAIL9PeXB3dicFP",
+      accessToken: mapConfig.jawgAccessToken,
     }
   ),
   SpinalMap: L.tileLayer(
@@ -46,7 +49,7 @@ const mapLayers = {
     {
       attribution:
         '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      apikey: "9e9bca8ab3c2417fbe0d0e233c0cfe3d",
+      apikey: mapConfig.thunderforestApiKey,
       maxZoom: 22,
     }
   ),
