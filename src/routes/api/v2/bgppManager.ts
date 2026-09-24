@@ -30,7 +30,7 @@ const cityCenters = {
 const parserV1 = new ParserV1();
 
 const cities: Record<CityID, BGPPCity> = {
-	bg: { city: 'Beograd', center: cityCenters['bg'], repo: repos['bg'], parser: parserV1 },
+	// bg: { city: 'Beograd', center: cityCenters['bg'], repo: repos['bg'], parser: parserV1 }, // currently disabled due to API issues
 	ns: { city: 'Novi Sad', center: cityCenters['ns'], repo: repos['ns'], parser: parserV1 },
 	ni: { city: 'Niš', center: cityCenters['ni'], repo: repos['ni'], parser: parserV1 }
 };

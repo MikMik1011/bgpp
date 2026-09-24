@@ -4,6 +4,6 @@
 </script>
 
 <ModeWatcher />
-<div class="m-5">
+<div class="sm:m-5">
 	<slot />
 </div>
