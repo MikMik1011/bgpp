@@ -2,12 +2,10 @@
 	import { onDestroy, onMount } from 'svelte';
 
 	// shadcn base
-	import Label from '$lib/components/ui/label/label.svelte';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Separator } from '$lib/components/ui/separator';
 
 	// custom components
@@ -20,7 +18,7 @@
 	import { getArrivals, type ArrivalsResponse } from '$lib/bgpp/client';
 	import type { Arrival } from '$lib/types';
 	import { formatSeconds } from '$lib/utils/format';
-	import { arrivalsDialogOpen, city, dataSaver, sortLines, selectedStationId } from '../stores';
+	import { arrivalsDialogOpen, city, selectedStationId } from '../stores';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -50,15 +48,6 @@
 		);
 
 	$: rows = arrivals ? flattenLines(arrivals) : [];
-	$: sortedRows = $sortLines
-		? [...rows].sort((a, b) => {
-				const numA = parseInt(a.lineNumber, 10);
-				const numB = parseInt(b.lineNumber, 10);
-				if (!Number.isNaN(numA) && !Number.isNaN(numB) && numA !== numB) return numA - numB;
-				if (a.lineNumber !== b.lineNumber) return a.lineNumber.localeCompare(b.lineNumber);
-				return a.etaSeconds - b.etaSeconds;
-			})
-		: [...rows].reverse();
 
 	$: mapMarkers = arrivals
 		? [
@@ -67,7 +56,7 @@
 					color: 'yellow',
 					popup: `${arrivals.station.name} (${arrivals.station.id})`
 				},
-				...sortedRows.map((row) => ({
+				...rows.map((row) => ({
 					coords: row.coords,
 					color: 'blue',
 					label: row.lineNumber,
@@ -112,7 +101,6 @@
 	}
 
 	const handleVisibilityChange = () => {
-		if (!$dataSaver) return;
 		if (document.hidden) stopPolling();
 		else if ($arrivalsDialogOpen) startPolling();
 	};
@@ -126,17 +114,17 @@
 </script>
 
 <Dialog.Root bind:open={$arrivalsDialogOpen}>
-	<div class="h-[90vh] flex justify-center items-center">
-		<Card.Root class="relative p-5">
-			<div class="absolute top-5 right-5"><ThemeToggle /></div>
+	<div class="flex min-h-[100dvh] items-center justify-center px-4 py-8">
+		<Card.Root class="relative w-full max-w-md rounded-2xl shadow-lg">
+			<div class="absolute top-4 right-4"><ThemeToggle /></div>
 			<Card.Header>
 				<Card.Title>BG++</Card.Title>
 				<Card.Description>fixamo fix ideje since 2023</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<div class="mb-2">
+				<div class="mb-4">
 					<Select.Root portal={null} bind:selected={$city}>
-						<Select.Trigger class="max-w-xs">
+						<Select.Trigger class="w-full">
 							<Select.Value placeholder="Izaberi grad..." />
 						</Select.Trigger>
 						<Select.Content>
@@ -150,9 +138,9 @@
 					</Select.Root>
 				</div>
 				<Separator />
-				<div class="my-2">
+				<div class="my-4">
 					<Select.Root portal={null} bind:selected={searchMode}>
-						<Select.Trigger class="max-w-xs">
+						<Select.Trigger class="w-full">
 							<Select.Value placeholder="Tip pretrage..." />
 						</Select.Trigger>
 						<Select.Content>
@@ -175,21 +163,13 @@
 					<FormLocation />
 				{/if}
 			</Card.Content>
-			<div class="mt-4 flex gap-8">
-				<div class="flex items-center gap-2">
-					<Label for="usteda">Ušteda podataka:</Label>
-					<Checkbox id="usteda" bind:checked={$dataSaver} />
-				</div>
-				<div class="flex items-center gap-2">
-					<Label for="sort">Sortiranje linija:</Label>
-					<Checkbox id="sort" bind:checked={$sortLines} />
-				</div>
-			</div>
 		</Card.Root>
 	</div>
-	<Dialog.Content class="sm:max-w-2xl">
-		<Dialog.Header>
-			<Dialog.Title>
+	<Dialog.Content
+		class="inset-0 left-0 top-0 h-[100dvh] max-h-[100dvh] w-full max-w-full translate-x-0 translate-y-0 overflow-x-hidden overflow-y-auto rounded-none border-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:h-auto sm:max-h-[90vh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-lg sm:border"
+	>
+		<Dialog.Header class="min-w-0">
+			<Dialog.Title class="break-words">
 				{#if arrivals}
 					Stanica: {arrivals.station.name} ({arrivals.station.id})
 				{:else}
@@ -204,12 +184,12 @@
 					<div>Ažuriranje u toku...</div>
 				{/if}
 				{#if errorMessage}
-					<div class="text-destructive">Greška pri ažuriranju: {errorMessage}</div>
+					<div class="text-destructive break-words">Greška pri ažuriranju: {errorMessage}</div>
 				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
-		<div class="flex flex-col gap-4">
-			<div class="w-full flex justify-center">
+		<div class="flex min-w-0 flex-col gap-4">
+			<div class="w-full min-w-0">
 				<Table.Root>
 					<Table.Header>
 						<Table.Row>
@@ -220,7 +200,7 @@
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{#each sortedRows as row}
+						{#each rows as row}
 							<Table.Row>
 								<Table.Cell class="font-medium">{row.lineNumber}</Table.Cell>
 								<Table.Cell class="text-right">{formatSeconds(row.etaSeconds)}</Table.Cell>
@@ -232,7 +212,7 @@
 				</Table.Root>
 			</div>
 			{#if arrivals}
-				<div class="h-72 w-full overflow-hidden rounded-md border">
+				<div class="aspect-square max-h-[70vh] w-full overflow-hidden rounded-md border">
 					<LiveMap
 						center={arrivals.station.coords}
 						markers={mapMarkers}

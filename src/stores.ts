@@ -5,8 +5,6 @@ import { getStations } from '$lib/bgpp/client';
 
 export const city = writable<Selected<string> | undefined>(undefined);
 
-export const dataSaver = writable(true);
-export const sortLines = writable(false);
 export const arrivalsDialogOpen = writable(false);
 
 export const selectedStationId = writable<string>('');

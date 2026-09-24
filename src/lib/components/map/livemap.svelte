@@ -42,7 +42,7 @@
 		if (recenterKey !== lastRecenterKey) {
 			lastRecenterKey = recenterKey;
 			if (autoFit && leafletMarkers.length > 0) {
-				map.fitBounds(L.featureGroup(leafletMarkers).getBounds());
+				map.fitBounds(L.featureGroup(leafletMarkers).getBounds(), { maxZoom: 16 });
 			} else {
 				map.setView([center.lat, center.lon], zoom);
 			}

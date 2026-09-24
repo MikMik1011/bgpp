@@ -1,13 +1,15 @@
 <script>
 	import Check from 'svelte-radix/Check.svelte';
 	import CaretSort from 'svelte-radix/CaretSort.svelte';
-	import { tick } from 'svelte';
+	import { createEventDispatcher, tick } from 'svelte';
 	import * as Command from '$lib/components/ui/command/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
 
 	export let selectables;
+
+	const dispatch = createEventDispatcher();
 
 	const MAX_RESULTS = 50;
 
@@ -49,16 +51,20 @@
 			variant="outline"
 			role="combobox"
 			aria-expanded={open}
-			class="w-full justify-between"
+			class="w-full justify-between bg-card"
 		>
 			{selectedValue}
 			<CaretSort class="ml-2 h-4 w-4 shrink-0 opacity-50" />
 		</Button>
 	</Popover.Trigger>
-	<Popover.Content class="w-[min(320px,90vw)] p-0">
-		<Command.Root shouldFilter={false}>
-			<Command.Input bind:value={searchTerm} placeholder="Pretraži stanice..." class="h-9" />
-			<Command.List>
+	<Popover.Content
+		class="flex w-[min(24rem,92vw)] flex-col bg-card p-0"
+		fitViewport
+		collisionPadding={16}
+	>
+		<Command.Root shouldFilter={false} class="flex min-h-0 flex-1 flex-col bg-card">
+			<Command.Input bind:value={searchTerm} placeholder="Pretraži stanice..." class="shrink-0 sm:h-9" />
+			<Command.List class="max-h-[40vh] sm:max-h-[300px]">
 				<Command.Empty>Stanica nije pronađena.</Command.Empty>
 				<Command.Group>
 					{#each filteredSelectables as selectable (selectable.value)}
@@ -66,6 +72,7 @@
 							value={selectable.label}
 							onSelect={() => {
 								value = selectable.value;
+								dispatch('select', selectable.value);
 								closeAndFocusTrigger(ids.trigger);
 							}}
 						>

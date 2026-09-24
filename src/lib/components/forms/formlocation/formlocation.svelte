@@ -1,8 +1,6 @@
 <script lang="ts">
-	import Combobox from '$lib/components/ui/combobox/combobox.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Slider } from '$lib/components/ui/slider';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import LiveMap from '$lib/components/map/livemap.svelte';
 	import type { Coords } from '$lib/types';
@@ -32,18 +30,12 @@
 				}))
 				.filter((station) => station.distance <= maxDistance[0])
 				.sort((a, b) => a.distance - b.distance);
-			$selectedStationId = closestStations[0]?.id ?? '';
 		} catch (err) {
 			errorMessage = err instanceof Error ? err.message : 'Greška pri pronalaženju lokacije.';
 		} finally {
 			searching = false;
 		}
 	};
-
-	$: selectables = closestStations.map((station) => ({
-		label: `${station.name} (${station.id}) | ${station.distance}m`,
-		value: station.id
-	}));
 
 	$: mapMarkers = userCoords
 		? [
@@ -59,6 +51,7 @@
 
 	const handleMarkerClick = (event: CustomEvent<string>) => {
 		$selectedStationId = event.detail;
+		$arrivalsDialogOpen = true;
 	};
 </script>
 
@@ -76,7 +69,7 @@
 	</div>
 
 	{#if userCoords && !$arrivalsDialogOpen}
-		<div class="h-56 w-full overflow-hidden rounded-md border mb-2">
+		<div class="h-72 w-full overflow-hidden rounded-md border">
 			<LiveMap
 				center={userCoords}
 				markers={mapMarkers}
@@ -85,17 +78,10 @@
 				on:markerclick={handleMarkerClick}
 			/>
 		</div>
+		{#if closestStations.length === 0}
+			<p class="mt-2 text-sm text-muted-foreground">
+				Nema stanica u ovom radijusu. Dodirni mapu ili povećaj najveću udaljenost.
+			</p>
+		{/if}
 	{/if}
-
-	{#if selectables.length > 0}
-		<Combobox {selectables} bind:value={$selectedStationId} />
-	{/if}
-
-	<div class="w-full">
-		<Dialog.Trigger asChild let:builder>
-			<Button builders={[builder]} class="w-full mt-2" disabled={!$selectedStationId}>
-				Kada će mi bus?
-			</Button>
-		</Dialog.Trigger>
-	</div>
 </div>
