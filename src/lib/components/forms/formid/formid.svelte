@@ -9,7 +9,7 @@
 </script>
 
 <div>
-	<Input bind:value={idValue} placeholder="Broj stanice (npr. P81524)" class="w-full" />
+	<Input bind:value={idValue} placeholder="Broj stanice (npr. 0402A)" class="w-full" />
 
 	<Dialog.Trigger asChild let:builder>
 		<Button builders={[builder]} class="w-full mt-2" disabled={!idValue.trim()}>
