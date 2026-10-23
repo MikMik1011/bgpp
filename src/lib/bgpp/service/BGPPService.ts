@@ -8,7 +8,8 @@ export class BGPPService {
 
 	@Cached<[CityID], AllStationsResponse>({
 		key: (city: CityID) => `${city}_ALL_STATIONS`,
-		ttl: '1d'
+		ttl: '1d',
+		staleWhileRevalidate: '7d' // stations rarely change, so serve the old list while refreshing it
 	})
 	async getAllStations(city: string): Promise<AllStationsResponse> {
 		const instance = this.busLogicInstances[city];
