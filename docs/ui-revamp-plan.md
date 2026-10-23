@@ -520,21 +520,20 @@ Sizes: S under a day, M one to three days, L three to five.
 
 ### Phase 1: foundation (L)
 
-1. New branch from a clean tree. Do not mix with the current uncommitted changes in `BGPPService.ts`, `Cached.ts`, `bgppManager.ts`, `openapi-v2.yaml`.
-2. Upgrade to the stack in 4.1. Remove the packages in 4.2. Update the Dockerfile.
-3. Add `gen-theme.mjs`, `theme.css`, `app.css`, fonts, `app.html` boot script and meta tags, manifest and icon colours.
-4. Build `AppBar`, `AdaptiveScaffold`, `viewport` rune, `NavigationRail` wiring, preferences and favorites state, and a theme toggle in a stub settings dialog.
-5. Delete the old pages, forms and `ui/` kit; leave the `/api/v2` JSON routes alone. The API reference page is restyled in Phase 4.
-6. Developer and agent tooling (do this early so everything after is checked):
-   - `typescript` and `svelte-check` as real dev dependencies so `pnpm check` works (it fails today); strict mode on; fix or delete the existing type errors (delete the dead `src/lib/buslogic/leftover/` Fastify code).
-   - Vitest, `eslint` and `prettier` working, and one command `pnpm verify` that runs check, lint, test and build.
-   - A CI workflow that runs `pnpm verify` on every pull request to `main` and `redesign`.
-   - `AGENTS.md` at the repo root: stack, commands, folder layout, naming, the no-secondary-labels rule, the "do not change `/api/v2` shapes" rule, and how to add a component. A short `docs/` index pointing to the plan.
-   - Typed API client: generate TypeScript types from `openapi-v2.yaml` (or hand-write them to match it) so API data is never `any`; fix `Station.uid` to `number` here.
-   - Path aliases, a `src/lib/components` folder convention (one folder per component with the `.svelte` file and its test), and a component demo route (`/dev`, excluded from production) to see states in isolation.
-   - Preview deploys for `redesign` and for each pull request.
+Each numbered step is its own short branch off `redesign` and its own pull request into `redesign`. The order keeps the project building at every step.
 
-Exit: `pnpm verify` (check, lint, test, build) and the Docker build pass locally and in CI. The empty shell shows the right colours in light and dark at 360, 700, 1024 and 1440 px with the rail appearing at 600 px.
+1. **Cleanup** (`ms/feat/redesign-cleanup`): delete code nothing uses (`src/lib/buslogic/leftover/`, `old_static/`), add `typescript` and `svelte-check` so `pnpm check` runs, and get it to zero errors.
+2. **Remove the old UI kit:** delete the shadcn components and forms, the old page and its stores. Replace the page with a stub. Rewrite the small `/api/v2` reference page with plain CSS so it keeps its styling, then remove Tailwind, bits-ui, formsnap, superforms, cmdk-sv, mode-watcher, svelte-radix and their config.
+3. **Toolchain upgrade** (`ms/feat/redesign-toolchain`): Node 22 (`engines` and Dockerfile), Svelte 5, Vite 7, `vite-plugin-svelte` 6, Kit 2.70. The project is small by now, so there is little to migrate.
+4. **m3-svelte and theme** (`ms/feat/redesign-theme`): install m3-svelte and its helpers, `gen-theme.mjs`, `theme.css`, `app.css`, fonts, `app.html` boot script, meta tags, manifest and icon colours, and a token test against `Color.kt`.
+5. **Shell** (`ms/feat/redesign-shell`): `viewport` rune, `AppBar`, `AdaptiveScaffold`, `NavigationRail`, stub routes, preferences state and a stub settings dialog with the theme toggle.
+6. **Developer and agent tooling** (`ms/feat/redesign-tooling`):
+   - Strict TypeScript and Vitest, `eslint` and `prettier` working, and one command `pnpm verify` that runs check, lint, test and build.
+   - `AGENTS.md` at the repo root: stack, commands, folder layout, naming, the no-secondary-labels rule, the "do not change `/api/v2` shapes" rule, and how to add a component.
+   - Typed API client matching `openapi-v2.yaml` so API data is never `any`; `Station.uid` becomes `number`.
+   - Component folder convention (the `.svelte` file next to its test) and a `/dev` route, excluded from production, for viewing components in isolation.
+
+Exit: `pnpm verify` (check, lint, test, build) and the Docker build pass locally. CI/CD and deployment are handled by the owner outside this plan. The empty shell shows the right colours in light and dark at 360, 700, 1024 and 1440 px with the rail appearing at 600 px.
 
 ### Phase 2: compact screens (L)
 
