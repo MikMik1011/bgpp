@@ -37,6 +37,13 @@ const cities: Record<CityID, BGPPCity> = {
 
 export const bgppService = new BGPPService(new NodeCacheStore(), cities)
 
+// Hydrate the station lists at startup so the first requests don't wait on the upstream APIs
+for (const city of Object.keys(cities)) {
+	bgppService
+		.getAllStations(city)
+		.catch((err) => console.error(`Failed to prewarm stations for ${city}:`, err));
+}
+
 export const getCities = () => {
 	return Object.entries(cities).map(([key, value]) => ({
 		id: key,
