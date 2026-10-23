@@ -1,0 +1,227 @@
+openapi: 3.0.3
+info:
+  title: BG++ API v2
+  description: JSON, GET-only API used by the BG++ app for city/station/arrival data.
+  version: "2.0.0"
+servers:
+  - url: https://bgpp.misa.st
+
+paths:
+  /api/v2/cities:
+    get:
+      operationId: listCities
+      summary: List supported cities
+      tags: [Cities]
+      responses:
+        "200":
+          description: List of supported cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/City"
+
+  /api/v2/cities/{city}/stations:
+    get:
+      operationId: listStations
+      summary: All stations in a city
+      tags: [Stations]
+      parameters:
+        - $ref: "#/components/parameters/CityParam"
+      responses:
+        "200":
+          description: List of stations in the city
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Station"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v2/cities/{city}/stations/hash:
+    get:
+      operationId: getStationsHash
+      summary: Combined hash of every station's hash in a city, for change detection
+      tags: [Stations]
+      parameters:
+        - $ref: "#/components/parameters/CityParam"
+      responses:
+        "200":
+          description: Combined hash
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [hash]
+                properties:
+                  hash:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v2/cities/{city}/stations/{stationId}:
+    get:
+      operationId: getStation
+      summary: A single station by its id
+      tags: [Stations]
+      parameters:
+        - $ref: "#/components/parameters/CityParam"
+        - $ref: "#/components/parameters/StationIdParam"
+      responses:
+        "200":
+          description: Station details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Station"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v2/cities/{city}/stations/{stationId}/arrivals:
+    get:
+      operationId: getStationArrivals
+      summary: Live arrivals for a station
+      tags: [Arrivals]
+      parameters:
+        - $ref: "#/components/parameters/CityParam"
+        - $ref: "#/components/parameters/StationIdParam"
+      responses:
+        "200":
+          description: Live arrivals grouped by line
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [station, lines]
+                properties:
+                  station:
+                    $ref: "#/components/schemas/Station"
+                  lines:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Line"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+components:
+  parameters:
+    CityParam:
+      name: city
+      in: path
+      required: true
+      description: City identifier (e.g. "ns", "ni")
+      schema:
+        type: string
+    StationIdParam:
+      name: stationId
+      in: path
+      required: true
+      description: Station identifier
+      schema:
+        type: string
+
+  schemas:
+    Coords:
+      type: object
+      required: [lat, lon]
+      properties:
+        lat:
+          type: number
+        lon:
+          type: number
+
+    City:
+      type: object
+      required: [id, name, center]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        center:
+          $ref: "#/components/schemas/Coords"
+
+    Station:
+      type: object
+      required: [name, uid, id, coords, hash]
+      properties:
+        name:
+          type: string
+        uid:
+          type: integer
+        id:
+          type: string
+        coords:
+          $ref: "#/components/schemas/Coords"
+        hash:
+          type: string
+
+    Arrival:
+      type: object
+      required: [etaSeconds, etaStations, garageNo, coords]
+      properties:
+        etaSeconds:
+          type: number
+        etaStations:
+          type: number
+        stationName:
+          type: string
+          description: Name of the stop the bus is currently near. "Unknown" when the upstream provides none.
+        garageNo:
+          type: string
+        coords:
+          $ref: "#/components/schemas/Coords"
+
+    Line:
+      type: object
+      required: [lineNumber, lineName, arrivals]
+      properties:
+        lineNumber:
+          type: string
+        lineName:
+          type: string
+        arrivals:
+          type: array
+          items:
+            $ref: "#/components/schemas/Arrival"
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Missing or unsupported city/station
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Station not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ServerError:
+      description: Failed to retrieve data
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
