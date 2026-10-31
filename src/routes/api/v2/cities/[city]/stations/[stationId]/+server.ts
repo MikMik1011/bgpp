@@ -1,5 +1,5 @@
 import { error, json, type RequestEvent } from '@sveltejs/kit';
-import { bgppService } from '../../../../bgppManager';
+import { bgppService } from '$lib/server/cities';
 
 export const GET = async ({ params, url }: RequestEvent) => {
 	if (!params.city) {

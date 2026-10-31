@@ -1,5 +1,5 @@
 import { BusLogicRepo } from './BusLogicRepo';
-import type { BusLogicRepoParams } from '../../types';
+import type { BusLogicRepoParams } from '$lib/server/providers/buslogic/types';
 
 const endpoints = {
 	allStations: '/publicapi/v1/networkextended.php',

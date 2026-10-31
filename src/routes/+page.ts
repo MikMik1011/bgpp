@@ -1,4 +1,4 @@
-import { getCities } from '$lib/bgpp/client';
+import { getCities } from '$lib/client/api';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch }) => {

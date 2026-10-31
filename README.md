@@ -21,9 +21,12 @@ Other scripts: `pnpm build`, `pnpm preview`, `pnpm check`, `pnpm lint`, `pnpm fo
 
 - `src/routes/api/v2` — the public API (cities, stations, arrivals). See `/api/v2` for reference
   docs.
-- `src/lib/buslogic` — client for the upstream BusLogic transit API.
-- `src/lib/bgpp` — service layer that maps BusLogic responses into BG++'s API shape.
-- `src/lib/components` — Svelte UI, including the shadcn-svelte-based component kit under `ui/`.
+- `src/lib/server` — server-only code: the service layer that maps provider responses into BG++'s
+  API shape, caching, and the providers themselves (currently BusLogic, under `providers/buslogic`).
+- `src/lib/shared` — types shared by the server and the client.
+- `src/lib/client` — browser-only code: the API client, map layers and display helpers.
+- Legacy UI, replaced by the redesign: `src/lib/components` (including the shadcn-svelte kit under
+  `ui/`), `src/stores.ts`, `src/lib/utils.js`. Don't add new code there.
 
 ## Fair Usage Policy
 

@@ -1,15 +1,5 @@
-import type { Coords, Line, Station } from '$lib/types';
-
-export type City = {
-	id: string;
-	name: string;
-	center: Coords;
-};
-
-export type ArrivalsResponse = {
-	station: Station;
-	lines: Line[];
-};
+import type { ArrivalsResponse, City } from '$lib/shared/contract';
+import type { Station } from '$lib/shared/types';
 
 const jsonFetch = async <T>(fetchFn: typeof fetch, url: string): Promise<T> => {
 	const res = await fetchFn(url);

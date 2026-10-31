@@ -1,7 +1,7 @@
 import type { Station } from '$lib/types';
 import type { Selected } from 'bits-ui';
 import { derived, get, writable } from 'svelte/store';
-import { getStations } from '$lib/bgpp/client';
+import { getStations } from '$lib/client/api';
 
 export const city = writable<Selected<string> | undefined>(undefined);
 
