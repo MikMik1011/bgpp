@@ -6,6 +6,8 @@ import { ParserV1 } from '$lib/server/providers/buslogic/parser/ParserV1';
 import type { CityID, Coords } from '$lib/shared/types';
 import type { BGPPCity } from '$lib/server/ports';
 import { NodeCacheStore } from '@cacheable/node-cache';
+import { BusLogicSource } from './providers/buslogic/BusLogicSource';
+
 
 const repos: { [id: string]: BusLogicRepo } = {
 	bg: new BusLogicRepoV2({
@@ -23,17 +25,23 @@ const repos: { [id: string]: BusLogicRepo } = {
 		apiKey: 'cddfd29e495b4851965d'
 	})
 };
+
 const cityCenters = {
 	bg: { lat: 44.81254796404323, lon: 20.46145496621977 },
 	ns: { lat: 45.267136, lon: 19.833549 },
 	ni: { lat: 43.3209, lon: 21.8958 }
 } as Record<string, Coords>;
+
 const parserV1 = new ParserV1();
+const sources = {
+	ns: new BusLogicSource(repos['ns'], parserV1),
+	ni: new BusLogicSource(repos['ni'], parserV1)
+};
 
 const cities: Record<CityID, BGPPCity> = {
-	// bg: { city: 'Beograd', center: cityCenters['bg'], repo: repos['bg'], parser: parserV1 }, // currently disabled due to API issues
-	ns: { city: 'Novi Sad', center: cityCenters['ns'], repo: repos['ns'], parser: parserV1 },
-	ni: { city: 'Niš', center: cityCenters['ni'], repo: repos['ni'], parser: parserV1 }
+	// bg: { city: 'Beograd', center: cityCenters['bg'], timezone: 'Europe/Belgrade', stations: bg, live: bg }, // currently disabled due to API issues
+	ns: { city: 'Novi Sad', center: cityCenters['ns'], timezone: 'Europe/Belgrade', stations: sources.ns, live: sources.ns },
+	ni: { city: 'Niš', center: cityCenters['ni'], timezone: 'Europe/Belgrade', stations: sources.ni, live: sources.ni }
 };
 
 export const bgppService = new BGPPService(new NodeCacheStore(), cities)

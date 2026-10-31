@@ -5,7 +5,7 @@ import type { NodeCacheStore } from '@cacheable/node-cache';
 
 export class BGPPService {
 	private readonly cache: NodeCacheStore<any>;
-    private busLogicInstances: Record<CityID, BGPPCity>;
+    private cities: Record<CityID, BGPPCity>;
 
 	@Cached<[CityID], AllStationsResponse>({
 		key: (city: CityID) => `${city}_ALL_STATIONS`,
@@ -13,13 +13,9 @@ export class BGPPService {
 		staleWhileRevalidate: '7d' // stations rarely change, so serve the old list while refreshing it
 	})
 	async getAllStations(city: string): Promise<AllStationsResponse> {
-		const instance = this.busLogicInstances[city];
-		if (!instance) {
-			throw new Error(`City ${city} is not supported`);
-		}
-		const stations = await instance.repo.getAllStations();
-        const parsed = instance.parser.parseAllStations(stations);
-        return parsed;
+		const instance = this.cities[city];
+		if (!instance) throw new Error(`City ${city} is not supported`);
+		return instance.stations.getStations();
 	}
 
     @Cached<[CityID, Station], Line[]>({
@@ -27,21 +23,21 @@ export class BGPPService {
 		ttl: '15s'
 	})
     async getStationLiveArrivals(city: CityID, station: Station): Promise<Line[]> {
-        const instance = this.busLogicInstances[city];
-        if (!instance) {
-            throw new Error(`City ${city} is not supported`);
-        }
-        const arrivals = await instance.repo.getStationLiveArrivals(station.uid);
-        const parsed = instance.parser.parseStationLiveArrivals(arrivals);
-        return parsed;
+        const instance = this.cities[city];
+		if (!instance) throw new Error(`City ${city} is not supported`);
+		if (!instance.live) return [];
+		return instance.live.getLiveArrivals(station);
     }
 
-	constructor(cache: NodeCacheStore<any>, busLogicInstances?: Record<CityID, BGPPCity>) {
+	constructor(cache: NodeCacheStore<any>, cities?: Record<CityID, BGPPCity>) {
 		this.cache = cache;
-		this.busLogicInstances = busLogicInstances ?? {};
+		this.cities = cities ?? {};
+		for (const [id, c] of Object.entries(this.cities)) {
+			if (!c.live && !c.schedule) throw new Error(`City ${id} has neither live nor schedule data`);
+		}
 	}
 
     isCitySupported(city: CityID): boolean {
-        return !!this.busLogicInstances[city];
+        return !!this.cities[city];
     }
 }
