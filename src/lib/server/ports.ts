@@ -1,5 +1,5 @@
-import type { IParser } from "$lib/bgpp/parser/IParser"
-import type { BusLogicRepo } from "$lib/buslogic/repo/BusLogicRepo"
+import type { IParser } from "$lib/server/providers/buslogic/parser/IParser"
+import type { BusLogicRepo } from "$lib/server/providers/buslogic/repo/BusLogicRepo"
 import type { Coords } from "$lib/shared/types"
 
 export type BGPPCity = {

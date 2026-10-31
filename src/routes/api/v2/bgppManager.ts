@@ -1,8 +1,8 @@
 import { BGPPService } from '$lib/bgpp/service/BGPPService';
-import type { BusLogicRepo } from '$lib/buslogic/repo/BusLogicRepo';
-import { BusLogicRepoV1 } from '$lib/buslogic/repo/BusLogicRepoV1';
-import { BusLogicRepoV2 } from '$lib/buslogic/repo/BusLogicRepoV2';
-import { ParserV1 } from '$lib/bgpp/parser/ParserV1';
+import type { BusLogicRepo } from '$lib/server/providers/buslogic/repo/BusLogicRepo';
+import { BusLogicRepoV1 } from '$lib/server/providers/buslogic/repo/BusLogicRepoV1';
+import { BusLogicRepoV2 } from '$lib/server/providers/buslogic/repo/BusLogicRepoV2';
+import { ParserV1 } from '$lib/server/providers/buslogic/parser/ParserV1';
 import type { CityID, Coords } from '$lib/shared/types';
 import type { BGPPCity } from '$lib/server/ports';
 import { NodeCacheStore } from '@cacheable/node-cache';
