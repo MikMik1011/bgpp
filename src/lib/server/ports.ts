@@ -10,6 +10,16 @@ export interface ScheduleSource {
 	getSchedule(station: Station, now: number): Promise<Record<string, ScheduledDeparture[]>>; // key: line number; now: unix seconds
 }
 
+export interface StationParser<Raw> {
+	parseStations(raw: Raw): AllStationsResponse;
+}
+export interface LiveParser<Raw> {
+	parseLive(raw: Raw, station: Station, now: number): Line[];
+}
+export interface ScheduleParser<Raw> {
+	parseSchedule(raw: Raw, station: Station, now: number): Record<string, ScheduledDeparture[]>;
+}
+
 export type BGPPCity = {
 	city: string;
 	center: Coords;

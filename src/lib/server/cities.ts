@@ -2,11 +2,11 @@ import { BGPPService } from '$lib/server/service/BGPPService';
 import type { BusLogicRepo } from '$lib/server/providers/buslogic/repo/BusLogicRepo';
 import { BusLogicRepoV1 } from '$lib/server/providers/buslogic/repo/BusLogicRepoV1';
 import { BusLogicRepoV2 } from '$lib/server/providers/buslogic/repo/BusLogicRepoV2';
-import { ParserV1 } from '$lib/server/providers/buslogic/parser/ParserV1';
 import type { CityID, Coords } from '$lib/shared/types';
 import type { BGPPCity } from '$lib/server/ports';
 import { NodeCacheStore } from '@cacheable/node-cache';
 import { BusLogicSource } from './providers/buslogic/BusLogicSource';
+import { BusLogicParser } from './providers/buslogic/parser/BusLogicParser';
 
 
 const repos: { [id: string]: BusLogicRepo } = {
@@ -32,10 +32,10 @@ const cityCenters = {
 	ni: { lat: 43.3209, lon: 21.8958 }
 } as Record<string, Coords>;
 
-const parserV1 = new ParserV1();
+const busLogicParser = new BusLogicParser();
 const sources = {
-	ns: new BusLogicSource(repos['ns'], parserV1),
-	ni: new BusLogicSource(repos['ni'], parserV1)
+	ns: new BusLogicSource(repos['ns'], busLogicParser),
+	ni: new BusLogicSource(repos['ni'], busLogicParser)
 };
 
 const cities: Record<CityID, BGPPCity> = {
