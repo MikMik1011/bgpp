@@ -29,3 +29,5 @@ export type Coords = {
 }
 
 export type CityID = string;
+
+export type ScheduledDeparture = { time: number; headsign?: string; garageNo?: string }; // time: unix seconds

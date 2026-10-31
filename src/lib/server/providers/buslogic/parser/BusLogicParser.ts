@@ -1,12 +1,8 @@
-import type { IParser } from "./IParser";
 import type { AllStationsResponse, Arrival, Line, Station } from "$lib/shared/types";
 import { defaultHash } from "$lib/server/hash";
+import type { LiveParser, StationParser } from "$lib/server/ports";
 
-/**
- * Parser v1
- * Compatible with BusLogicV1 and BusLogicV2
- */
-export class ParserV1 implements IParser {
+export class BusLogicParser implements StationParser<any>, LiveParser<any> {
 
     private parseStation(value: any) : Station {
         const stationWithoutHash = {
@@ -22,7 +18,7 @@ export class ParserV1 implements IParser {
 
     }
 
-    parseAllStations(response: any): AllStationsResponse {
+    parseStations(response: any): AllStationsResponse {
         return response.stations.reduce(
 			(acc: AllStationsResponse, value: any) => {
 				const station = this.parseStation(value);
@@ -31,7 +27,7 @@ export class ParserV1 implements IParser {
 			{}
 		);
     }
-    parseStationLiveArrivals(response: any): Line[] {
+    parseLive(response: any): Line[] {
         if (response.length == 0 || response[0].just_coordinates == "1") return [];
         const linesMap = response.toReversed().reduce((map: Map<string, Line>, value: any) => {
             const arrival: Arrival = {
