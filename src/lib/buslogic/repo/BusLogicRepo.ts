@@ -1,4 +1,4 @@
-import type { BusLogicRepoParams } from "../../types";
+import type { BusLogicRepoParams } from "$lib/server/providers/buslogic/types";
 
 export abstract class BusLogicRepo {
 

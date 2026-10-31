@@ -1,5 +1,5 @@
 import { BusLogicRepo } from './BusLogicRepo';
-import type { BusLogicRepoV2Params } from '../../types';
+import type { BusLogicRepoV2Params } from '$lib/server/providers/buslogic/types';
 import crypto from 'crypto';
 
 const endpoints = {

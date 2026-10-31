@@ -3,7 +3,8 @@ import type { BusLogicRepo } from '$lib/buslogic/repo/BusLogicRepo';
 import { BusLogicRepoV1 } from '$lib/buslogic/repo/BusLogicRepoV1';
 import { BusLogicRepoV2 } from '$lib/buslogic/repo/BusLogicRepoV2';
 import { ParserV1 } from '$lib/bgpp/parser/ParserV1';
-import type { BGPPCity, CityID, Coords } from '$lib/types';
+import type { CityID, Coords } from '$lib/shared/types';
+import type { BGPPCity } from '$lib/server/ports';
 import { NodeCacheStore } from '@cacheable/node-cache';
 
 const repos: { [id: string]: BusLogicRepo } = {
