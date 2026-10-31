@@ -1,6 +1,6 @@
 import type { IParser } from "./IParser";
 import type { AllStationsResponse, Arrival, Line, Station } from "$lib/shared/types";
-import { defaultHash } from "$lib/utils/hash";
+import { defaultHash } from "$lib/server/hash";
 
 /**
  * Parser v1

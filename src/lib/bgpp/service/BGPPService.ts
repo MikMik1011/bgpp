@@ -1,6 +1,6 @@
 import type { AllStationsResponse, CityID, Line, Station } from '$lib/shared/types';
 import type { BGPPCity } from '$lib/server/ports';
-import { Cached } from '$lib/cache/Cached';
+import { Cached } from '$lib/server/cache/Cached';
 import type { NodeCacheStore } from '@cacheable/node-cache';
 
 export class BGPPService {

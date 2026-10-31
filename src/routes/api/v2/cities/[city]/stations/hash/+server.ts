@@ -1,6 +1,6 @@
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import { bgppService } from '../../../../bgppManager';
-import { defaultHash } from '$lib/utils/hash';
+import { defaultHash } from '$lib/server/hash';
 
 export const GET = async ({ params, fetch }: RequestEvent) => {
 	if (!params.city) {
