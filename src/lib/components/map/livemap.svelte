@@ -51,7 +51,7 @@
 
 	onMount(async () => {
 		L = (await import('leaflet')).default;
-		const { createTileLayers } = await import('$lib/map/mapLayers');
+		const { createTileLayers } = await import('$lib/client/map/mapLayers');
 
 		map = L.map(mapEl, { center: [center.lat, center.lon], zoom });
 		layerGroup = L.layerGroup().addTo(map);

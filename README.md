@@ -24,7 +24,9 @@ Other scripts: `pnpm build`, `pnpm preview`, `pnpm check`, `pnpm lint`, `pnpm fo
 - `src/lib/server` — server-only code: the service layer that maps provider responses into BG++'s
   API shape, caching, and the providers themselves (currently BusLogic, under `providers/buslogic`).
 - `src/lib/shared` — types shared by the server and the client.
-- `src/lib/components` — Svelte UI, including the shadcn-svelte-based component kit under `ui/`.
+- `src/lib/client` — browser-only code: the API client, map layers and display helpers.
+- Legacy UI, replaced by the redesign: `src/lib/components` (including the shadcn-svelte kit under
+  `ui/`), `src/stores.ts`, `src/lib/utils.js`. Don't add new code there.
 
 ## Fair Usage Policy
 

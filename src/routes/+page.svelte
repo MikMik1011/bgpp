@@ -15,9 +15,10 @@
 	import ThemeToggle from '$lib/components/ui/themetoggle/themetoggle.svelte';
 	import LiveMap from '$lib/components/map/livemap.svelte';
 
-	import { getArrivals, type ArrivalsResponse } from '$lib/bgpp/client';
+	import { getArrivals } from '$lib/client/api';
+	import type { ArrivalsResponse } from '$lib/shared/contract';
 	import type { Arrival } from '$lib/types';
-	import { formatSeconds } from '$lib/utils/format';
+	import { formatSeconds } from '$lib/client/util/format';
 	import { arrivalsDialogOpen, city, selectedStationId } from '../stores';
 	import type { PageData } from './$types';
 
