@@ -1,4 +1,4 @@
-import { BGPPService } from '$lib/bgpp/service/BGPPService';
+import { BGPPService } from '$lib/server/service/BGPPService';
 import type { BusLogicRepo } from '$lib/server/providers/buslogic/repo/BusLogicRepo';
 import { BusLogicRepoV1 } from '$lib/server/providers/buslogic/repo/BusLogicRepoV1';
 import { BusLogicRepoV2 } from '$lib/server/providers/buslogic/repo/BusLogicRepoV2';
