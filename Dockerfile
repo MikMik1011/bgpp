@@ -1,12 +1,12 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN npm install -g --allow-scripts=pnpm pnpm@12.16.1
 
 # Copy package files first (for caching)
-COPY pnpm-lock.yaml package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -18,10 +18,8 @@ COPY . .
 RUN pnpm build
 
 # Run stage
-FROM node:20-alpine
+FROM node:26-alpine
 WORKDIR /app
-
-RUN npm install -g pnpm
 
 # Copy only necessary files
 COPY --from=builder /app/package.json ./
