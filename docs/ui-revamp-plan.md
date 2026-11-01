@@ -138,7 +138,7 @@ Avoid unnecessary secondary labels and descriptions. Position, size, grouping, i
 
 ### 4.3 Infrastructure
 
-- `Dockerfile`: `node:22-alpine` for both stages (Vite 7 needs Node ≥20.19).
+- `Dockerfile`: `node:26-alpine` for both stages (Vite 7 needs Node ≥20.19).
 - `vite.config.ts`: `plugins: [sveltekit(), functionsMixins({ deps: ["m3-svelte"] })]`.
 - Pin exact versions of `m3-svelte` and the colour library. m3-svelte is young and has a single maintainer, and the colour library is a nightly.
 - Phase 5b: env vars `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `ALERTS_DATA_DIR`, and a Docker volume at `/data` (section 11.6).
@@ -524,7 +524,7 @@ Each numbered step is its own short branch off `redesign` and its own pull reque
 
 1. **Cleanup** (`ms/feat/redesign-cleanup`): delete code nothing uses (`src/lib/buslogic/leftover/`, `old_static/`), add `typescript` and `svelte-check` so `pnpm check` runs, and get it to zero errors.
 2. **Remove the old UI kit:** delete the shadcn components and forms, the old page and its stores. Replace the page with a stub. Rewrite the small `/api/v2` reference page with plain CSS so it keeps its styling, then remove Tailwind, bits-ui, formsnap, superforms, cmdk-sv, mode-watcher, svelte-radix and their config.
-3. **Toolchain upgrade** (`ms/feat/redesign-toolchain`): Node 22 (`engines` and Dockerfile), Svelte 5, Vite 7, `vite-plugin-svelte` 6, Kit 2.70. The project is small by now, so there is little to migrate.
+3. **Toolchain upgrade** (`ms/feat/redesign-toolchain`): Node 26 (`engines` and Dockerfile), Svelte 5, Vite 7, `vite-plugin-svelte` 6, Kit 2.70. The project is small by now, so there is little to migrate.
 4. **m3-svelte and theme** (`ms/feat/redesign-theme`): install m3-svelte and its helpers, `gen-theme.mjs`, `theme.css`, `app.css`, fonts, `app.html` boot script, meta tags, manifest and icon colours, and a token test against `Color.kt`.
 5. **Shell** (`ms/feat/redesign-shell`): `viewport` rune, `AppBar`, `AdaptiveScaffold`, `NavigationRail`, stub routes, preferences state and a stub settings dialog with the theme toggle.
 6. **Developer and agent tooling** (`ms/feat/redesign-tooling`):
@@ -598,7 +598,7 @@ Exit: with the browser fully closed, an alert fires once at the threshold on And
 
 | Item | Risk and mitigation |
 |---|---|
-| Svelte 5 + Vite 7 + Node ≥20.19 | Infrastructure must move to Node 22. Do it in Phase 1 and verify the Docker build early. |
+| Svelte 5 + Vite 7 + Node ≥20.19 | Infrastructure must move to Node 26. Do it in Phase 1 and verify the Docker build early. |
 | m3-svelte maturity | Single maintainer and fast releases. Pin the exact version; wrap its components in our own thin components so a future swap is local. |
 | Colour library is a nightly | Pin in the lockfile; the theme is generated once and committed, so runtime does not depend on it for the default accent. |
 | No `class` on m3-svelte components | Layout goes on wrapper elements; use `:global()` sparingly. |

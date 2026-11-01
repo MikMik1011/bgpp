@@ -18,7 +18,7 @@
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.0",
 		"@types/leaflet": "^1.9.22",
-		"@types/node": "^22.5.2",
+		"@types/node": "^26.6.6",
 		"autoprefixer": "^10.4.19",
 		"bits-ui": "^0.21.2",
 		"clsx": "^2.1.0",
@@ -46,5 +46,8 @@
 		"@cacheable/node-cache": "^1.7.6",
 		"keyv": "^5.5.5",
 		"leaflet": "^1.9.4"
+	},
+	"engines": {
+		"node": ">=26"
 	}
 }
